@@ -1,9 +1,32 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useLayout } from '@/layouts/layout';
 import AppConfigurator from './AppConfigurator.vue';
+import { useAuthStore } from '@/store/auth';
+import { useRouter } from 'vue-router';
 
-// PrimeVue’s StyleClass directive doesn't need additional TS handling
+const auth = useAuthStore();
+const router = useRouter();
+
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+const countries = ref([
+    { name: 'Italian', code: 'IT' },
+    { name: 'English', code: 'GB' },
+]);
+
+const buildings = ref([
+    { name: 'building1', code: '01' },
+    { name: 'building2', code: '02' },
+]);
+
+const selectedCountry = ref(countries.value[0]);
+const selectedBuilding = ref(buildings.value[0]);
+
+function logout() {
+    auth.logout();
+    router.push({ name: 'Login' });
+}
+
 </script>
 
 <template>
@@ -39,11 +62,12 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
         <!-- Action Buttons (Dark Mode, Configurator) -->
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
+                <Select v-model="selectedBuilding" :options="buildings" optionLabel="name" placeholder="Select a project" class="" />
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', isDarkTheme ? 'pi-moon' : 'pi-sun']"></i>
                 </button>
 
-                <div class="relative">
+                <!-- <div class="relative">
                     <button
                         v-styleclass="{
                             selector: '@next',
@@ -59,9 +83,25 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                         <i class="pi pi-palette"></i>
                     </button>
 
-                    <!-- AppConfigurator should be enabled when implemented -->
                     <AppConfigurator />
-                </div>
+                </div> -->
+                <Select v-model="selectedCountry" :options="countries" optionLabel="name" placeholder="Select a Country" class="w-12 p-0 lan-select">
+                    <template #value="slotProps">
+                        <div class="flex items-center">
+                            <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 22px" />
+                        </div>
+                    </template>
+                    <template #option="slotProps">
+                        <div class="flex items-center">
+                            <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 22px" />
+                        </div>
+                    </template>
+                </Select>
+                
+                <button type="button" class="layout-topbar-action" @click="logout">
+                    <i class="pi pi-sign-out"></i>
+                    <span>Profile</span>
+                </button>
             </div>
 
             <!-- Mobile Menu Toggle -->
@@ -82,20 +122,21 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
             <!-- Right-aligned menu (only visible on lg+) -->
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-user"></i>
-                        <span>Profile</span>
-                    </button>
+                    
                 </div>
             </div>
         </div>
     </div>
 </template>
+<style>
+.lan-select >.p-select-dropdown {
+    display: none !important;
+}
+.lan-select{
+    border: none !important;
+    box-shadow: none !important ;
+}
+.p-select-label {
+    align-self: center;
+}
+</style>

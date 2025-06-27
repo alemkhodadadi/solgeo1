@@ -5,6 +5,7 @@ import Aura from '@primeuix/themes/aura';
 import Lara from '@primeuix/themes/lara';
 import Nora from '@primeuix/themes/nora';
 import { ref } from 'vue';
+import { onMounted } from 'vue';
 
 const { layoutConfig, isDarkTheme } = useLayout();
 
@@ -23,6 +24,7 @@ const menuModeOptions = ref([
 ]);
 
 const primaryColors = ref([
+    { name: 'brand',  palette: { 50:  '#fdecee', 100: '#f9d1d7', 200: '#f4a5ad', 300: '#ef7983', 400: '#ea4d59', 500: '#ae1e3b', 600: '#9b1a36', 700: '#84172f', 800: '#6d1328', 900: '#561021', 950: '#3f0d1a' } },
     { name: 'noir', palette: {} },
     { name: 'emerald', palette: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b', 950: '#022c22' } },
     { name: 'green', palette: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16' } },
@@ -39,8 +41,8 @@ const primaryColors = ref([
     { name: 'purple', palette: { 50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe', 400: '#c084fc', 500: '#a855f7', 600: '#9333ea', 700: '#7e22ce', 800: '#6b21a8', 900: '#581c87', 950: '#3b0764' } },
     { name: 'fuchsia', palette: { 50: '#fdf4ff', 100: '#fae8ff', 200: '#f5d0fe', 300: '#f0abfc', 400: '#e879f9', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf', 800: '#86198f', 900: '#701a75', 950: '#4a044e' } },
     { name: 'pink', palette: { 50: '#fdf2f8', 100: '#fce7f3', 200: '#fbcfe8', 300: '#f9a8d4', 400: '#f472b6', 500: '#ec4899', 600: '#db2777', 700: '#be185d', 800: '#9d174d', 900: '#831843', 950: '#500724' } },
-    { name: 'rose', palette: { 50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3', 300: '#fda4af', 400: '#fb7185', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 800: '#9f1239', 900: '#881337', 950: '#4c0519' } },
-    { name: 'brand',  palette: { 50:  '#fdecee', 100: '#f9d1d7', 200: '#f4a5ad', 300: '#ef7983', 400: '#ea4d59', 500: '#ae1e3b', 600: '#9b1a36', 700: '#84172f', 800: '#6d1328', 900: '#561021', 950: '#3f0d1a' } }
+    { name: 'rose', palette: { 50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3', 300: '#fda4af', 400: '#fb7185', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 800: '#9f1239', 900: '#881337', 950: '#4c0519' } }
+    
 ]);
 
 const surfaces = ref([
@@ -197,6 +199,12 @@ function onPresetChange() {
 function onMenuModeChange() {
     layoutConfig.menuMode = menuMode.value;
 }
+
+
+onMounted(() => {
+    // Apply initial preset and color setup
+    onPresetChange(); // this includes the surface + getPresetExt logic
+});
 </script>
 
 <template>
