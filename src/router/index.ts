@@ -5,7 +5,26 @@ import AppLayout from '@/layouts/AppLayout.vue'
 
 export const routes = [
   {
-    path: '',
+    path: '/structures',
+    component: AppLayout,
+    children: [
+      {
+        path: '/',
+        name: 'Structures',
+        component: () => import('@/views/Structures.vue'),
+        meta: {
+          title: 'Structures',
+          requiresAuth: true,
+          requiredRoles: ['admin']
+        }
+      },
+    ],
+    meta: {
+      title: 'Structures',
+    }
+  },
+  {
+    path: '/structures/:structureId',
     component: AppLayout,
     children: [
       {
@@ -143,7 +162,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  console.log('isauthenticated:', authStore.isAuthenticated)
   // Set page title if available
   if (to.meta.title) {
     document.title = to.meta.title as string

@@ -1,8 +1,10 @@
 <script setup>
 import AppConfigurator from '@/layouts/AppConfigurator.vue';
 import { useLayout } from '@/layouts/layout';
+import AppLangButton from '@/layouts/AppLangButton.vue';
 
 const { toggleDarkMode, isDarkTheme } = useLayout();
+
 </script>
 
 <template>
@@ -17,5 +19,6 @@ const { toggleDarkMode, isDarkTheme } = useLayout();
             />
             <AppConfigurator />
         </div>
+        <AppLangButton />
     </div>
 </template>

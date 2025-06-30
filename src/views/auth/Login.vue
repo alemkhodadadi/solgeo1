@@ -1,41 +1,62 @@
 <script setup lang="ts">
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
+import AppLang from '@/layouts/AppLangButton.vue';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
+import { z } from 'zod';
+
+import { zodResolver } from '@primevue/forms/resolvers/zod';
+
+const toast = useToast();
+const loading = ref(false);
+
+const initialValues = ref({
+    username: '',
+	password: ''
+});
+
+const errorMessage = ref('');
+
+const resolver =  zodResolver(
+    z.object({
+        username: z.string().min(1, { message: 'Username is required.' }),
+        password: z.string().min(1, { message: 'Password is required.' })
+    })
+);
 
 const auth = useAuthStore();
 const router = useRouter();
 
-const username = ref('');
-const password = ref('');
-const checked = ref(false);
-
-const loading = ref(false);
-const errorMessage = ref('');
-
-async function handleLogin() {
-	console.log('Login attempt with:', username.value, password.value);
-  loading.value = true;
-  errorMessage.value = '';
-  try {
-    await auth.login({
-      username: username.value,
-      password: password.value,
-    });
-		console.log('Login successful:', auth.user);
-    // Redirect on success
-    router.push('/dashboard'); // change to your actual home page
-  } catch (error: any) {
-    errorMessage.value = error?.response?.data?.message || 'Login failed';
-  } finally {
-    loading.value = false;
-  }
+async function onFormSubmit(e) {
+	console.log('Form submitted with values:', e);
+	if(e.valid){
+		loading.value = true;
+		try {
+			await auth.login({
+				username: initialValues.value.username,
+				password: initialValues.value.password,
+			});
+				console.log('Login successful:', auth.user);
+			// Redirect on success
+			router.push('/structures'); // change to your actual home page
+		} catch (error: any) {
+			errorMessage.value = error?.response?.data?.message || 'Login failed';
+		} finally {
+			loading.value = false;
+		}
+	}
 }
+
+
+
 </script>
+
 
 <template>
     <FloatingConfigurator />
+	
     <div style="background-image: url('images/backgroundimage.png');" class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 22px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
@@ -55,37 +76,29 @@ async function handleLogin() {
                             <path d="M430 364 c-105 -51 -283 -128 -385 -167 l-40 -15 -3 -86 -3 -86 276 0 275 0 0 205 c0 113 -1 205 -2 205 -2 0 -55 -26 -118 -56z"/>
                             </g>
                         </svg>
-                        <div class="text-surface-900 dark:text-surface-0 mt-5 text-1xl font-medium mb-4">Welcome to SolGeo portal!</div>
-                        <span class="text-muted-color font-medium">Sign in to continue</span>
+                        <div class="text-surface-900 dark:text-surface-0 mt-5 text-1xl font-medium mb-4">{{$t('welcome')}}</div>
+                        <span class="text-muted-color font-medium">{{$t('login.credentialSentence')}}</span>
                     </div>
 
-                    <div>
-                        <div v-if="errorMessage" class="text-red-500 text-center mb-4">
-                            {{ errorMessage }}
-                        </div>
-                        <label for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
-                        <InputText v-model="username" id="username" :disabled="loading" type="text" placeholder="Username" class="w-full md:w-[30rem] mb-8" />
-
-                        <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                        <Password v-model="password" id="password" :disabled="loading" placeholder="Password" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
-
-                        <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                            <div class="flex items-center">
-                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                                <label for="rememberme1">Remember me</label>
-                            </div>
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
-                        </div>
-                        <Button
-                            label="Sign In"
-                            class="w-full"
-                            :loading="loading"
-                            @click="handleLogin"
-                        />
-                    </div>
+                    <Form v-slot="$form" :resolver="resolver" @submit="onFormSubmit" class="w-full flex flex-col gap-4">
+						<div class="flex flex-col gap-1">
+							<InputText v-model="initialValues.username" name="username" type="text" placeholder="Username" fluid />
+							<Message v-if="$form.username?.invalid" severity="error" size="small" variant="simple">{{ $form.username.error.message }}</Message>
+						</div>
+						<div class="flex flex-col gap-1">
+							<Password v-model="initialValues.password" name="password" placeholder="Password" :feedback="false" toggleMask fluid />
+							<Message v-if="$form.password?.invalid" severity="error" size="small" variant="simple">
+								<ul class="my-0 px-4 flex flex-col gap-1">
+									<li v-for="(error, index) of $form.password.errors" :key="index">{{ error.message }}</li>
+								</ul>
+							</Message>
+						</div>
+						<Button type="submit" severity="secondary" :label="$t('form.submit')" />
+                    </Form>
                 </div>
             </div>
         </div>
+        <Toast/>
     </div>
 </template>
 

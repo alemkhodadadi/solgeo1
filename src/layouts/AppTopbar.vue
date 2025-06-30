@@ -1,29 +1,24 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useLayout } from '@/layouts/layout';
-import AppConfigurator from './AppConfigurator.vue';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
+import AppLang from './AppLangButton.vue';
 
-const auth = useAuthStore();
+const authStore = useAuthStore();
 const router = useRouter();
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
-const countries = ref([
-    { name: 'Italian', code: 'IT' },
-    { name: 'English', code: 'GB' },
-]);
 
 const buildings = ref([
     { name: 'building1', code: '01' },
     { name: 'building2', code: '02' },
 ]);
 
-const selectedCountry = ref(countries.value[0]);
 const selectedBuilding = ref(buildings.value[0]);
 
 function logout() {
-    auth.logout();
+    authStore.logout();
     router.push({ name: 'Login' });
 }
 
@@ -62,43 +57,13 @@ function logout() {
         <!-- Action Buttons (Dark Mode, Configurator) -->
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
-                <Select v-model="selectedBuilding" :options="buildings" optionLabel="name" placeholder="Select a project" class="" />
-                <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
+                <Select v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="selectedBuilding" :options="buildings" optionLabel="name" placeholder="Select a project" class="" />
+                <button v-tooltip.bottom="{ value: $t('topbar.changetheme')}" type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', isDarkTheme ? 'pi-moon' : 'pi-sun']"></i>
                 </button>
+                <AppLang/>
 
-                <!-- <div class="relative">
-                    <button
-                        v-styleclass="{
-                            selector: '@next',
-                            enterFromClass: 'hidden',
-                            enterActiveClass: 'animate-scalein',
-                            leaveToClass: 'hidden',
-                            leaveActiveClass: 'animate-fadeout',
-                            hideOnOutsideClick: true
-                        }"
-                        type="button"
-                        class="layout-topbar-action layout-topbar-action-highlight"
-                    >
-                        <i class="pi pi-palette"></i>
-                    </button>
-
-                    <AppConfigurator />
-                </div> -->
-                <Select v-model="selectedCountry" :options="countries" optionLabel="name" placeholder="Select a Country" class="w-12 p-0 lan-select">
-                    <template #value="slotProps">
-                        <div class="flex items-center">
-                            <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 22px" />
-                        </div>
-                    </template>
-                    <template #option="slotProps">
-                        <div class="flex items-center">
-                            <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 22px" />
-                        </div>
-                    </template>
-                </Select>
-                
-                <button type="button" class="layout-topbar-action" @click="logout">
+                <button v-tooltip.bottom="{ value: $t('topbar.logout')}" type="button" class="layout-topbar-action" @click="logout">
                     <i class="pi pi-sign-out"></i>
                     <span>Profile</span>
                 </button>

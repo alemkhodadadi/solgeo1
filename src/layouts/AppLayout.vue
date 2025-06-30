@@ -4,6 +4,24 @@ import { computed, ref, watch } from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppFooter from './AppFooter.vue';
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// const currentRootPath = computed(() => {
+    
+//     const segments = route.path.split('/')
+//     console.log(segments[0])
+//     if (segments.length >= 2) {
+//         console.log('Current root path:', segments[0], segments[1])
+//         return `/${segments[0]}/${segments[1]}`
+//     }
+//     return '/'
+// })
+
+// watch(currentRootPath, (newPath) => {
+//     console.log('Current root path changed:', newPath)
+// }, { immediate: true })
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
@@ -18,6 +36,8 @@ watch(isSidebarActive, (newVal) => {
         unbindOutsideClickListener();
     }
 });
+
+
 
 const containerClass = computed(() => ({
     'layout-overlay': layoutConfig.menuMode === 'overlay',

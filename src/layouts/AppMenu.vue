@@ -16,19 +16,19 @@ interface MenuItem {
 
 const model = ref<MenuItem[]>([
   {
-    label: 'Home',
+    label: 'menu.home',
     items: [
-			{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' },
-			{ label: 'Data Explorer', icon: 'pi pi-fw pi-chart-bar', to: '/data-explorer' },
-			{ label: 'Analytics', icon: 'pi pi-fw pi-chart-line', to: '/analytics' },
-			{ label: 'Alarms', icon: 'pi pi-fw pi-info-circle', to: '/alarms' },
-			{ label: 'Tools', icon: 'pi pi-fw pi-wrench', to: '/tools' },
-			{ label: 'Devices', icon: 'pi pi-fw pi-tablet', to: '/devices' },
-			{ label: 'Repositories', icon: 'pi pi-fw pi-folder-open', to: '/repositories' },
-			{ label: 'Settings', icon: 'pi pi-fw pi-cog', to: '/settings' },
-			{ label: 'Reports', icon: 'pi pi-fw pi-file-pdf', to: '/reports' },
-      { label: 'Map', icon: 'pi pi-fw pi-map', to: '/map' }
-		]
+      { label: 'menu.dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' },
+      { label: 'menu.dataExplorer', icon: 'pi pi-fw pi-chart-bar', to: '/data-explorer' },
+      { label: 'menu.analytics', icon: 'pi pi-fw pi-chart-line', to: '/analytics' },
+      { label: 'menu.alarms', icon: 'pi pi-fw pi-info-circle', to: '/alarms' },
+      { label: 'menu.tools', icon: 'pi pi-fw pi-wrench', to: '/tools' },
+      { label: 'menu.devices', icon: 'pi pi-fw pi-tablet', to: '/devices' },
+      { label: 'menu.repositories', icon: 'pi pi-fw pi-folder-open', to: '/repositories' },
+      { label: 'menu.settings', icon: 'pi pi-fw pi-cog', to: '/settings' },
+      { label: 'menu.reports', icon: 'pi pi-fw pi-file-pdf', to: '/reports' },
+      { label: 'menu.map', icon: 'pi pi-fw pi-map', to: '/map' }
+    ]
   }
 ])
 </script>
