@@ -69,6 +69,17 @@ export function useLayout() {
         }
     };
 
+    const closeMenu = () => {
+        layoutState.overlayMenuActive = false;
+        layoutState.staticMenuMobileActive = false;
+
+        if (window.innerWidth > 991 && layoutConfig.menuMode === 'static') {
+            layoutState.staticMenuDesktopInactive = true;
+        }
+
+        layoutState.menuHoverActive = false;
+    }
+
     const isSidebarActive = computed<boolean>(
         () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive
     );
@@ -83,6 +94,7 @@ export function useLayout() {
         layoutConfig,
         layoutState,
         toggleMenu,
+        closeMenu,
         isSidebarActive,
         isDarkTheme,
         getPrimary,

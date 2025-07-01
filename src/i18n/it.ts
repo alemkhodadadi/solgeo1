@@ -27,6 +27,9 @@ const it = {
 		reports: 'Rapporti',
 		map: 'Mappa',
 		
+	},
+	projects:{
+		open: "Apri"
 	}
 }
 

@@ -4,13 +4,10 @@ import { ref } from 'vue';
 import AppLang from '@/layouts/AppLangButton.vue';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
 import { z } from 'zod';
 
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 
-const toast = useToast();
-const loading = ref(false);
 
 const initialValues = ref({
     username: '',
@@ -26,26 +23,18 @@ const resolver =  zodResolver(
     })
 );
 
-const auth = useAuthStore();
+const authStore = useAuthStore();
 const router = useRouter();
 
 async function onFormSubmit(e) {
 	console.log('Form submitted with values:', e);
 	if(e.valid){
-		loading.value = true;
-		try {
-			await auth.login({
-				username: initialValues.value.username,
-				password: initialValues.value.password,
-			});
-				console.log('Login successful:', auth.user);
-			// Redirect on success
-			router.push('/structures'); // change to your actual home page
-		} catch (error: any) {
-			errorMessage.value = error?.response?.data?.message || 'Login failed';
-		} finally {
-			loading.value = false;
-		}
+
+        await authStore.login({
+            username: initialValues.value.username,
+            password: initialValues.value.password,
+        })
+        router.push({ name: 'Projects' });
 	}
 }
 
@@ -93,12 +82,11 @@ async function onFormSubmit(e) {
 								</ul>
 							</Message>
 						</div>
-						<Button type="submit" severity="secondary" :label="$t('form.submit')" />
+						<Button type="submit" :loading="authStore.login_loading" severity="secondary" :label="$t('form.submit')" />
                     </Form>
                 </div>
             </div>
         </div>
-        <Toast/>
     </div>
 </template>
 

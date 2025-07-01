@@ -26,7 +26,9 @@ const en = {
 		settings: 'Settings',
 		reports: 'Reports',
 		map: 'Map',
-		
+	},
+	projects:{
+		open: "Open"
 	}
 }
 

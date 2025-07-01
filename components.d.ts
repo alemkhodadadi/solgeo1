@@ -9,8 +9,10 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
+    Card: typeof import('primevue/card')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     FloatingConfigurator: typeof import('./src/components/FloatingConfigurator.vue')['default']
+    FloatLabel: typeof import('primevue/floatlabel')['default']
     Form: typeof import('@primevue/forms/form')['default']
     FormField: typeof import('@primevue/forms/formfield')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
@@ -22,12 +24,14 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']
     Password: typeof import('primevue/password')['default']
+    ProjectCard: typeof import('./src/components/ProjectCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('primevue/select')['default']
     SelectButton: typeof import('primevue/selectbutton')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     Toast: typeof import('primevue/toast')['default']
+    Toaster: typeof import('./src/components/Toaster.vue')['default']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
   }
   export interface GlobalDirectives {

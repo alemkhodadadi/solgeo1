@@ -5,26 +5,26 @@ import AppLayout from '@/layouts/AppLayout.vue'
 
 export const routes = [
   {
-    path: '/structures',
+    path: '/projects',
     component: AppLayout,
     children: [
       {
-        path: '/',
-        name: 'Structures',
-        component: () => import('@/views/Structures.vue'),
+        path: '',
+        name: 'Projects',
+        component: () => import('@/views/Projects.vue'),
         meta: {
-          title: 'Structures',
+          title: 'Projects',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
       },
     ],
     meta: {
-      title: 'Structures',
+      title: 'Projects',
     }
   },
   {
-    path: '/structures/:structureId',
+    path: '/projects/:projectId',
     component: AppLayout,
     children: [
       {

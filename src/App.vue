@@ -2,6 +2,7 @@
 import { watch } from 'vue'
 import { useAppStore } from '@/store/app'
 import { useI18n } from 'vue-i18n'
+import Toaster from '@/components/Toaster.vue'
 
 const app = useAppStore()
 const { locale } = useI18n()
@@ -16,7 +17,8 @@ watch(() => app.applang, (newLang) => {
 </script>
 
 <template>
-  <router-view />
+	<Toaster/>
+  	<router-view />
 </template>
 
 <style scoped></style>

@@ -1,26 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useLayout } from '@/layouts/layout';
 import { useAuthStore } from '@/store/auth';
-import { useRouter } from 'vue-router';
+import { useProjectStore } from '@/store/project';
+import { useRouter, useRoute } from 'vue-router';
 import AppLang from './AppLangButton.vue';
+import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
+const projectStore = useProjectStore();
+
+const { projects, currentProject } = storeToRefs(projectStore);
+
+onMounted(() => {
+    // Fetch projects when the component is mounted
+    console.log('currentProject', currentProject.value);
+});
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
-const buildings = ref([
-    { name: 'building1', code: '01' },
-    { name: 'building2', code: '02' },
-]);
-
-const selectedBuilding = ref(buildings.value[0]);
 
 function logout() {
     authStore.logout();
     router.push({ name: 'Login' });
 }
+
 
 </script>
 
@@ -48,7 +54,7 @@ function logout() {
 
             </router-link>
 
-            <button class="layout-menu-button layout-topbar-action ml-6" @click="toggleMenu">
+            <button v-if="currentProject" class="layout-menu-button layout-topbar-action ml-6" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button>
 
@@ -57,10 +63,10 @@ function logout() {
         <!-- Action Buttons (Dark Mode, Configurator) -->
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
-                <Select v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="selectedBuilding" :options="buildings" optionLabel="name" placeholder="Select a project" class="" />
-                <button v-tooltip.bottom="{ value: $t('topbar.changetheme')}" type="button" class="layout-topbar-action" @click="toggleDarkMode">
-                    <i :class="['pi', isDarkTheme ? 'pi-moon' : 'pi-sun']"></i>
-                </button>
+                <Select v-if="currentProject" v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="currentProject" :options="projects" optionLabel="name" placeholder="Select a project" class="" />
+                    <button v-tooltip.bottom="{ value: $t('topbar.changetheme')}" type="button" class="layout-topbar-action" @click="toggleDarkMode">
+                        <i :class="['pi', isDarkTheme ? 'pi-moon' : 'pi-sun']"></i>
+                    </button>
                 <AppLang/>
 
                 <button v-tooltip.bottom="{ value: $t('topbar.logout')}" type="button" class="layout-topbar-action" @click="logout">
