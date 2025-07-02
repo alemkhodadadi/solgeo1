@@ -80,6 +80,17 @@ export function useLayout() {
         layoutState.menuHoverActive = false;
     }
 
+    const openMenu = () => {
+        layoutState.overlayMenuActive = true;
+        layoutState.staticMenuMobileActive = true;
+
+        if (window.innerWidth > 991 && layoutConfig.menuMode === 'static') {
+            layoutState.staticMenuDesktopInactive = true;
+        }
+
+        layoutState.menuHoverActive = true;
+    }
+
     const isSidebarActive = computed<boolean>(
         () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive
     );

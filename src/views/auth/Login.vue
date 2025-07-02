@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
-import AppLang from '@/layouts/AppLangButton.vue';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
 import { z } from 'zod';

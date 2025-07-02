@@ -2,10 +2,11 @@
 import { useLayout } from '@/layouts/layout';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAppStore } from '@/store/app';
 
 const route = useRoute();
 
-const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
+const { layoutState, setActiveMenuItem, toggleMenu } = useAppStore();
 
 const props = defineProps({
     item: {
@@ -49,6 +50,8 @@ function itemClick(event, item) {
         event.preventDefault();
         return;
     }
+
+    console.log('item.to:', item.to, ' item.url: ', item.url, ' layoutState.staticMenuMobileActive: ', layoutState.staticMenuMobileActive, ' layoutState.overlayMenuActive: ', layoutState.overlayMenuActive)
 
     if ((item.to || item.url) && (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)) {
         toggleMenu();

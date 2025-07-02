@@ -1,4 +1,20 @@
 
+
+<script setup lang="ts">
+import type { IProject } from '@/interfaces/models';
+import { useProjectStore } from '@/store/project';
+import { useRouter } from 'vue-router';
+
+const projectStore = useProjectStore()
+const router = useRouter()
+
+defineProps<{ project: IProject }>();
+
+function openProject(id: any){
+    router.push({ path: `/projects/${id}` });
+}
+</script>
+
 <template>
     <Card class="d-flex">
         <template #header>
@@ -13,15 +29,9 @@
         </template>
         <template #footer>
             <div class="flex gap-4 mt-1">
-                <Button :label="$t('projects.open')" class="w-full" />
+                <Button :loading="projectStore.loadingProject" :label="$t('projects.open')" class="w-full" @click="openProject(project._id)"/>
             </div>
         </template>
     </Card>
 </template>
 
-
-<script setup lang="ts">
-import type { IProject } from '@/interfaces/models';
-
-defineProps<{ project: IProject }>();
-</script>

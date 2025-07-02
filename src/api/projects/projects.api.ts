@@ -2,7 +2,9 @@
 import  apiClient  from '@/api/http'
 import type { Project } from './projects.types'
 
-export const getProjects = () => apiClient.get<Project[]>('/projects')
+export const fetchProjects = () => apiClient.get<Project[]>('/projects')
+
+export const fetchSingleProject = (id: string) => apiClient.get<Project>(`/projects/${id}`)
 
 export const getProjectById = (id: string) =>
   apiClient.get<Project>(`/projects/${id}`)

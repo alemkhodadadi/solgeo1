@@ -2,19 +2,20 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { login as loginApi } from '@/api/auth/auth.api'
 import type { Project } from '@/api/projects/projects.types'
-import { getProjects as fetchProjects } from '@/api/projects/projects.api'
+import { fetchProjects, fetchSingleProject } from '@/api/projects/projects.api'
 
 export const useProjectStore = defineStore('project', () => {
 
     // State
     const projects = ref(<Project[]>([]))
     const currentProject = ref<Project | null>(null)
-    const loading = ref(false)
+    const loadingProjects = ref(false)
+    const loadingProject = ref(false)
     const error = ref<string | null>(null)
 
     // Actions
     async function getProjects() {
-        loading.value = true
+        loadingProjects.value = true
         try {
             const response = await fetchProjects()
             projects.value = response.data
@@ -26,7 +27,24 @@ export const useProjectStore = defineStore('project', () => {
             }
             throw err // re-throw if needed
         } finally {
-            loading.value = false
+            loadingProjects.value = false
+        }
+    }
+
+    async function getSingleProject(id: string){
+        loadingProject.value = true
+        try {
+            const response = await fetchSingleProject(id)
+            currentProject.value = response.data
+        } catch (err) {
+            if (err instanceof Error) {
+                error.value = err.message
+            } else {
+                error.value = String(err)
+            }
+            throw err // re-throw if needed
+        } finally {
+            loadingProject.value = false
         }
     }
 
@@ -34,5 +52,8 @@ export const useProjectStore = defineStore('project', () => {
         projects,
         currentProject,
         getProjects,
+        getSingleProject,
+        loadingProject, 
+        loadingProjects
     }
 })

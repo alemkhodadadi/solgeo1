@@ -1,5 +1,5 @@
 <script setup>
-import { useLayout } from '@/layouts/layout';
+import { useAppStore } from '@/store/app';
 import { $t, updatePreset, updateSurfacePalette } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import Lara from '@primeuix/themes/lara';
@@ -7,7 +7,7 @@ import Nora from '@primeuix/themes/nora';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 
-const { layoutConfig, isDarkTheme } = useLayout();
+const { layoutConfig, isDarkTheme } = useAppStore();
 
 const presets = {
     Aura,

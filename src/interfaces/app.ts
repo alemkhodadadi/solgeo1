@@ -12,3 +12,23 @@ export interface IToast {
   group?: string;
   life?: number
 }
+
+type MenuMode = 'static' | 'overlay';
+
+export interface ILayoutConfig {
+    preset: string;
+    primary: string;
+    surface: string | null;
+    darkTheme: boolean;
+    menuMode: MenuMode;
+}
+
+export interface ILayoutState {
+    staticMenuDesktopInactive: boolean;
+    overlayMenuActive: boolean;
+    profileSidebarVisible: boolean;
+    configSidebarVisible: boolean;
+    staticMenuMobileActive: boolean;
+    menuHoverActive: boolean;
+    activeMenuItem: any;
+}

@@ -30,7 +30,7 @@ apiClient.interceptors.response.use(
             summary: 'Something went wrong!',
             detail: msg,
             group: 'api',
-            life: 3000
+            life: 5000
         })
         return Promise.reject(error);
     }

@@ -15,7 +15,8 @@ export const routes = [
         meta: {
           title: 'Projects',
           requiresAuth: true,
-          requiredRoles: ['admin']
+          requiredRoles: ['admin'],
+          hideNavbar: true
         }
       },
     ],
@@ -32,7 +33,7 @@ export const routes = [
         name: 'Dashboard',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Dashboard',
+          title: 'menu.dashboard',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -42,7 +43,7 @@ export const routes = [
         name: 'Data Explorer',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Data Explorer',
+          title: 'menu.dataExplorer',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -52,7 +53,7 @@ export const routes = [
         name: 'Analytics',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Analytics',
+          title: 'menu.analytics',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -62,7 +63,7 @@ export const routes = [
         name: 'Alarms',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Alarms',
+          title: 'menu.alarms',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -72,7 +73,7 @@ export const routes = [
         name: 'Tools',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Tools',
+          title: 'menu.tools',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -82,7 +83,7 @@ export const routes = [
         name: 'Devices',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Devices',
+          title: 'menu.devices',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -92,7 +93,7 @@ export const routes = [
         name: 'Reports',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Reports',
+          title: 'menu.reports',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -102,7 +103,7 @@ export const routes = [
         name: 'Repositories',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Repositories',
+          title: 'menu.repositories',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -112,7 +113,7 @@ export const routes = [
         name: 'Settings',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'Settings',
+          title: 'menu.settings',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -122,7 +123,7 @@ export const routes = [
         name: 'Map',
         component: () => import('@/views/MapView.vue'),
         meta: {
-          title: 'Map',
+          title: 'menu.map',
           requiresAuth: true,
           requiredRoles: ['admin']
         }

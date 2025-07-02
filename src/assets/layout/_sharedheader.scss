@@ -1,0 +1,12 @@
+.layout-shared-header {
+    height: 15rem;
+    z-index: 995;
+    left: 10rem;
+    top: 5rem;
+    // padding: 0 2rem;
+    background-color: var(--surface-card);
+    transition: left var(--layout-section-transition-duration);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { useLayout } from './layout';
+import { useAppStore } from '@/store/app';
 import { computed, ref, watch } from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppFooter from './AppFooter.vue';
 import { useRoute } from 'vue-router'
 
-const { layoutConfig, layoutState, isSidebarActive } = useLayout();
+const { layoutConfig, layoutState, openMenu, closeMenu } = useAppStore();
 const route = useRoute()
 
 
 // Explicitly type the event listener as a nullable function
 const outsideClickListener = ref<((event: MouseEvent) => void) | null>(null);
 
+const isSidebarActive = computed<boolean>(
+    () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive
+);
 
 // Watch sidebar visibility to bind/unbind click outside handler
 watch(isSidebarActive, (newVal) => {
@@ -23,7 +26,18 @@ watch(isSidebarActive, (newVal) => {
     }
 });
 
+const hideNavbar = computed(() => route.meta.hideNavbar === true)
 
+watch(hideNavbar, (shouldHide) => {
+  console.log('hideNavbar changed:', shouldHide)
+
+  if (shouldHide) {
+    closeMenu()
+  } else {
+    console.log('openmenud')
+    openMenu()
+  }
+}, { immediate: true })
 
 const containerClass = computed(() => ({
     'layout-overlay': layoutConfig.menuMode === 'overlay',
@@ -32,6 +46,7 @@ const containerClass = computed(() => ({
     'layout-overlay-active': layoutState.overlayMenuActive,
     'layout-mobile-active': layoutState.staticMenuMobileActive
 }));
+
 
 function bindOutsideClickListener() {
     if (!outsideClickListener.value) {
@@ -74,7 +89,7 @@ function isOutsideClicked(event: MouseEvent): boolean {
 
 <template>
     <div class="layout-wrapper" :class="containerClass">
-        <app-topbar></app-topbar>
+        <app-topbar :hideNavbar="hideNavbar"></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
             <div class="layout-main">

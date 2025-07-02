@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { defineProps, computed, onMounted } from 'vue';
 import { useLayout } from '@/layouts/layout';
 import { useAuthStore } from '@/store/auth';
 import { useProjectStore } from '@/store/project';
 import { useRouter, useRoute } from 'vue-router';
 import AppLang from './AppLangButton.vue';
 import { storeToRefs } from 'pinia'
+import { useAppStore } from '@/store/app';
 
 const authStore = useAuthStore();
 const router = useRouter();
-const route = useRoute();
 const projectStore = useProjectStore();
+const {hideNavbar} = defineProps<{ hideNavbar: boolean | undefined }>();
+
 
 const { projects, currentProject } = storeToRefs(projectStore);
 
-onMounted(() => {
-    // Fetch projects when the component is mounted
-    console.log('currentProject', currentProject.value);
-});
 
-const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
-
+const appStore = useAppStore();
+const { toggleMenu, toggleDarkMode } = appStore;
 
 function logout() {
     authStore.logout();
@@ -51,10 +49,9 @@ function logout() {
                     <path d="M430 364 c-105 -51 -283 -128 -385 -167 l-40 -15 -3 -86 -3 -86 276 0 275 0 0 205 c0 113 -1 205 -2 205 -2 0 -55 -26 -118 -56z"/>
                     </g>
                 </svg>
-
             </router-link>
 
-            <button v-if="currentProject" class="layout-menu-button layout-topbar-action ml-6" @click="toggleMenu">
+            <button v-if="!hideNavbar" class="layout-menu-button layout-topbar-action ml-6" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button>
 
@@ -63,9 +60,9 @@ function logout() {
         <!-- Action Buttons (Dark Mode, Configurator) -->
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
-                <Select v-if="currentProject" v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="currentProject" :options="projects" optionLabel="name" placeholder="Select a project" class="" />
+                <Select v-if="!hideNavbar" v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="currentProject" :options="projects" optionLabel="name" placeholder="Select a project" class="" />
                     <button v-tooltip.bottom="{ value: $t('topbar.changetheme')}" type="button" class="layout-topbar-action" @click="toggleDarkMode">
-                        <i :class="['pi', isDarkTheme ? 'pi-moon' : 'pi-sun']"></i>
+                        <i :class="['pi', appStore.layoutConfig.darkTheme ? 'pi-moon' : 'pi-sun']"></i>
                     </button>
                 <AppLang/>
 

@@ -9,14 +9,12 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue';
 import { useProjectStore } from '@/store/project';
-import { useLayout } from '@/layouts/layout';
+import { useAppStore } from '@/store/app';
 import ProjectCard from '@/components/ProjectCard.vue';
-const { closeMenu } = useLayout();
 const projectStore = useProjectStore();
-
+const { closeMenu } = useAppStore()
 
 onMounted(() => {
-    closeMenu()
     projectStore.getProjects()
 });
 
