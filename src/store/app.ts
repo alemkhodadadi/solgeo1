@@ -24,6 +24,8 @@ export const useAppStore = defineStore('app', () => {
 	});
 
 	const toast = ref<IToast | null>(null)
+
+	const splashScreenStatus = ref<boolean>(false)
 	
 	const languages: ILanguage[] = [
 		{
@@ -56,6 +58,10 @@ export const useAppStore = defineStore('app', () => {
 
 	function setActiveMenuItem(item: any): void {
 		layoutState.value.activeMenuItem = item?.value ?? item;
+	}
+
+	function setSplashScreen(status: boolean) {
+		splashScreenStatus.value = status
 	}
 
 	const toggleDarkMode = () => {
@@ -110,10 +116,13 @@ export const useAppStore = defineStore('app', () => {
 
 	const getSurface = computed<string | null>(() => layoutConfig.value.surface);
 
+	
+
 	return {
 		layoutConfig,
 		layoutState,
 		applang,
+		splashScreenStatus,
 		languages,
 		setLanguage,
 		notify,
@@ -122,7 +131,9 @@ export const useAppStore = defineStore('app', () => {
 		setActiveMenuItem,
 		toggleMenu,
 		closeMenu, 
-		openMenu
+		openMenu,
+
+		setSplashScreen
 	}
 }, {
   persist: true 

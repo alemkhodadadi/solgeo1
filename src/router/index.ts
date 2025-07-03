@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/auth' // adjust if path is different
+import { useProjectStore } from '@/store/project'
 import AppLayout from '@/layouts/AppLayout.vue'
 
 
@@ -33,7 +34,8 @@ export const routes = [
         name: 'Dashboard',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.dashboard',
+          title: 'menu.titles.dashboard',
+          description: 'menu.descriptions.dashboard',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -43,7 +45,8 @@ export const routes = [
         name: 'Data Explorer',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.dataExplorer',
+          title: 'menu.titles.dataExplorer',
+          description: 'menu.descriptions.dataExplorer',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -53,7 +56,8 @@ export const routes = [
         name: 'Analytics',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.analytics',
+          title: 'menu.titles.analytics',
+          description: 'menu.descriptions.analytics',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -63,7 +67,8 @@ export const routes = [
         name: 'Alarms',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.alarms',
+          title: 'menu.titles.alarms',
+          description: 'menu.descriptions.alarms',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -73,7 +78,8 @@ export const routes = [
         name: 'Tools',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.tools',
+          title: 'menu.titles.tools',
+          description: 'menu.descriptions.tools',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -83,7 +89,8 @@ export const routes = [
         name: 'Devices',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.devices',
+          title: 'menu.titles.devices',
+          description: 'menu.descriptions.devices',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -93,7 +100,8 @@ export const routes = [
         name: 'Reports',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.reports',
+          title: 'menu.titles.reports',
+          description: 'menu.descriptions.reports',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -103,7 +111,8 @@ export const routes = [
         name: 'Repositories',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.repositories',
+          title: 'menu.titles.repositories',
+          description: 'menu.descriptions.repositories',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -113,7 +122,8 @@ export const routes = [
         name: 'Settings',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.settings',
+          title: 'menu.titles.settings',
+          description: 'menu.descriptions.settings',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -123,7 +133,8 @@ export const routes = [
         name: 'Map',
         component: () => import('@/views/MapView.vue'),
         meta: {
-          title: 'menu.map',
+          title: 'menu.titles.map',
+          description: 'menu.descriptions.map',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -163,7 +174,9 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  // Set page title if available
+  const projectStore = useProjectStore()
+
+  // 1. Set document title
   if (to.meta.title) {
     document.title = to.meta.title as string
   }
@@ -171,26 +184,45 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = authStore.isAuthenticated
   const user = authStore.user
 
-  // Redirect to login if route requires auth and user is not authenticated
+  // 2. If route requires auth and not logged in → redirect to login
   if (to.meta.requiresAuth && !isAuthenticated) {
     return next({ path: '/login', query: { redirect: to.fullPath } })
   }
 
-  // If authenticated, check required roles
+  // 3. If logged in, check roles if required
   if (to.meta.requiresAuth && to.meta.requiredRoles && user) {
-    const userRoles = user.roles || [] // Adjust depending on your AuthenticatedUser interface
+    const userRoles = user.roles || []
     const requiredRoles = to.meta.requiredRoles as string[]
-
     const hasAccess = requiredRoles.some(role => userRoles.includes(role))
 
     if (!hasAccess) {
-      return next('/not-found') // or redirect to a 403 page
+      return next('/not-found')
     }
   }
 
-  // If already logged in and going to /login, redirect to dashboard
+  // 4. If already logged in and tries to go to login → redirect to default
   if (to.path === '/login' && isAuthenticated) {
-    return next('/dashboard')
+    return next('/projects')
+  }
+
+  // 5. After login, decide where to go based on currentProject
+  if (isAuthenticated && to.meta.requiresAuth) {
+    const currentProject = projectStore.currentProject
+
+    // if (!currentProject || !currentProject._id) {
+    //   // If no project selected and not already on /projects
+    //   if (!to.path.startsWith('/projects') || to.params.projectId) {
+    //     return next('/projects')
+    //   }
+    // } else {
+    //   const intendedProjectId = currentProject._id.toString()
+    //   const isOnProject = to.params.projectId === intendedProjectId
+
+    //   // If user is not on the selected project path, redirect
+    //   if (!isOnProject) {
+    //     return next(`/projects/${intendedProjectId}/dashboard`)
+    //   }
+    // }
   }
 
   return next()

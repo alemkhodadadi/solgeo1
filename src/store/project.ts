@@ -31,7 +31,7 @@ export const useProjectStore = defineStore('project', () => {
         }
     }
 
-    async function getSingleProject(id: string){
+    async function getCurrentProject(id: string){
         loadingProject.value = true
         try {
             const response = await fetchSingleProject(id)
@@ -52,7 +52,7 @@ export const useProjectStore = defineStore('project', () => {
         projects,
         currentProject,
         getProjects,
-        getSingleProject,
+        getCurrentProject,
         loadingProject, 
         loadingProjects
     }

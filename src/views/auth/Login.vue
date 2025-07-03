@@ -2,18 +2,17 @@
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
 import { useAuthStore } from '@/store/auth';
+import { useAppStore } from '@/store/app';
 import { useRouter } from 'vue-router';
 import { z } from 'zod';
 
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 
-
+const appStore = useAppStore()
 const initialValues = ref({
     username: '',
 	password: ''
 });
-
-const errorMessage = ref('');
 
 const resolver =  zodResolver(
     z.object({
@@ -26,25 +25,26 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 async function onFormSubmit(e) {
-	console.log('Form submitted with values:', e);
-	if(e.valid){
+  console.log('Form submitted with values:', e)
+  appStore.setSplashScreen(true)
 
-        await authStore.login({
-            username: initialValues.value.username,
-            password: initialValues.value.password,
-        })
-        router.push({ name: 'Projects' });
-	}
+  setTimeout(async () => {
+    if (e.valid) {
+      await authStore.login({
+        username: initialValues.value.username,
+        password: initialValues.value.password,
+      })
+      router.push({ name: 'Projects' })
+    }
+
+    appStore.setSplashScreen(false) // ✅ now happens after delay + login
+  }, 3000)
 }
-
-
 
 </script>
 
-
 <template>
     <FloatingConfigurator />
-	
     <div style="background-image: url('images/backgroundimage.png');" class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 22px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
