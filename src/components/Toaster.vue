@@ -9,7 +9,7 @@
 import { ref, watch } from 'vue';
 import { useAppStore } from '@/store/app';
 import Toast from 'primevue/toast';
-import type { IToast } from '@/interfaces/app';
+import type { IToast } from '@/interfaces/layout';
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();

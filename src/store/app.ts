@@ -2,9 +2,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { ILanguage, IToast, ILayoutConfig, ILayoutState } from '@/interfaces/app'
+import type { ILanguage, IToast, ILayoutConfig, ILayoutState } from '@/interfaces/layout'
 
 export const useAppStore = defineStore('app', () => {
+
+	const appGeneralSettingDrawerVisible = ref(false)
+
+	const appLogoId = ref('')
+
 	const layoutConfig = ref<ILayoutConfig>({
 		preset: 'Aura',
 		primary: 'brand',
@@ -116,7 +121,16 @@ export const useAppStore = defineStore('app', () => {
 
 	const getSurface = computed<string | null>(() => layoutConfig.value.surface);
 
-	
+	function setAppGeneralSettingDrawerVisible(status: boolean){
+		console.log(status)
+		appGeneralSettingDrawerVisible.value = status
+	}
+
+	function setAppLogoId(id: string) {
+		appLogoId.value = id
+	}
+
+	const getAppLogoId = computed(() => appLogoId.value)
 
 	return {
 		layoutConfig,
@@ -132,8 +146,11 @@ export const useAppStore = defineStore('app', () => {
 		toggleMenu,
 		closeMenu, 
 		openMenu,
-
-		setSplashScreen
+		appGeneralSettingDrawerVisible,
+		setAppGeneralSettingDrawerVisible,
+		setSplashScreen,
+		getAppLogoId, 
+		setAppLogoId
 	}
 }, {
   persist: true 

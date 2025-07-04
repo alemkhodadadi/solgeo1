@@ -16,6 +16,9 @@ const {hideNavbar} = defineProps<{ hideNavbar: boolean | undefined }>();
 
 const { projects, currentProject } = storeToRefs(projectStore);
 
+function toggleAppGeneralSettingDrawer(){
+    appStore.setAppGeneralSettingDrawerVisible(!appStore.appGeneralSettingDrawerVisible)
+}
 
 const appStore = useAppStore();
 const { toggleMenu, toggleDarkMode } = appStore;
@@ -23,6 +26,11 @@ const { toggleMenu, toggleDarkMode } = appStore;
 function logout() {
     authStore.logout();
     router.push({ name: 'Login' });
+}
+
+function backToProjects(){
+    projectStore.unsetCurrentProject()
+    router.push({ name: 'Projects' });
 }
 
 
@@ -60,12 +68,16 @@ function logout() {
         <!-- Action Buttons (Dark Mode, Configurator) -->
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
-                <Select v-if="!hideNavbar" v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="currentProject" :options="projects" optionLabel="name" placeholder="Select a project" class="" />
-                    <button v-tooltip.bottom="{ value: $t('topbar.changetheme')}" type="button" class="layout-topbar-action" @click="toggleDarkMode">
-                        <i :class="['pi', appStore.layoutConfig.darkTheme ? 'pi-moon' : 'pi-sun']"></i>
-                    </button>
+                <!-- <Select v-if="!hideNavbar" v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="currentProject" :options="projects" optionLabel="name" placeholder="Select a project" class="" 
+                /> -->
+                <Button v-if="!hideNavbar" label="Back to projects"  severity="secondary" @click="backToProjects" outlined />
+                <button v-if="hideNavbar" type="button" class="layout-topbar-action" @click="toggleAppGeneralSettingDrawer">
+                    <i class="pi pi-cog"></i>
+                </button>
+                <button v-tooltip.bottom="{ value: $t('topbar.changetheme')}" type="button" class="layout-topbar-action" @click="toggleDarkMode">
+                    <i :class="['pi', appStore.layoutConfig.darkTheme ? 'pi-moon' : 'pi-sun']"></i>
+                </button>
                 <AppLang/>
-
                 <button v-tooltip.bottom="{ value: $t('topbar.logout')}" type="button" class="layout-topbar-action" @click="logout">
                     <i class="pi pi-sign-out"></i>
                     <span>Profile</span>

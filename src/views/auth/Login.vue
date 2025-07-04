@@ -29,11 +29,13 @@ async function onFormSubmit(e) {
   appStore.setSplashScreen(true)
 
   setTimeout(async () => {
+    console.log('e is:', e)
     if (e.valid) {
       await authStore.login({
         username: initialValues.value.username,
         password: initialValues.value.password,
       })
+      console.log('after authStore.logn')
       router.push({ name: 'Projects' })
     }
 

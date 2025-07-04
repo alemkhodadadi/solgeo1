@@ -22,15 +22,10 @@ const model = ref<MenuItem[]>([
     label: 'menu.titles.home',
     items: [
       { label: 'menu.titles.dashboard', icon: 'pi pi-fw pi-home', to: `/projects/${projectStore.currentProject?._id}/dashboard` },
-      { label: 'menu.titles.dataExplorer', icon: 'pi pi-fw pi-chart-bar', to: `/projects/${projectStore.currentProject?._id}/data-explorer` },
-      { label: 'menu.titles.analytics', icon: 'pi pi-fw pi-chart-line', to: `/projects/${projectStore.currentProject?._id}/analytics` },
+      { label: 'menu.titles.dataNavigation', icon: 'pi pi-fw pi-chart-bar', to: `/projects/${projectStore.currentProject?._id}/data-navigation` },
+      { label: 'menu.titles.analysis', icon: 'pi pi-fw pi-chart-line', to: `/projects/${projectStore.currentProject?._id}/analysis` },
       { label: 'menu.titles.alarms', icon: 'pi pi-fw pi-info-circle', to: `/projects/${projectStore.currentProject?._id}/alarms` },
-      { label: 'menu.titles.tools', icon: 'pi pi-fw pi-wrench', to: `/projects/${projectStore.currentProject?._id}/tools` },
-      { label: 'menu.titles.devices', icon: 'pi pi-fw pi-tablet', to: `/projects/${projectStore.currentProject?._id}/devices` },
-      { label: 'menu.titles.repositories', icon: 'pi pi-fw pi-folder-open', to: `/projects/${projectStore.currentProject?._id}/repositories` },
-      { label: 'menu.titles.settings', icon: 'pi pi-fw pi-cog', to: `/projects/${projectStore.currentProject?._id}/settings` },
-      { label: 'menu.titles.reports', icon: 'pi pi-fw pi-file-pdf', to: `/projects/${projectStore.currentProject?._id}/reports` },
-      { label: 'menu.titles.map', icon: 'pi pi-fw pi-map', to: `/projects/${projectStore.currentProject?._id}/map` }
+      { label: 'menu.titles.reports', icon: 'pi pi-fw pi-file-pdf', to: `/projects/${projectStore.currentProject?._id}/reports` }
     ]
   }
 ])

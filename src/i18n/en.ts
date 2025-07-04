@@ -18,27 +18,17 @@ const en = {
 	menu: {
 		titles: {
 			dashboard: 'Dashboard',
-			dataExplorer: 'Data Explorer',
-			analytics: 'Analytics',
+			dataNavigation: 'Data Navigation',
+			analysis: 'Comparison and Analysis ',
 			alarms: 'Alarms',
-			tools: 'Tools',
-			devices: 'Devices',
-			repositories: 'Repositories',
-			settings: 'Settings',
-			reports: 'Reports',
-			map: 'Map',
+			reports: 'Reports'
 		},
 		descriptions: {
 			dashboard: "this is the description for the dashpoard page",
-			dataExplorer: 'View the data history of all sensors.',
-			analytics: 'Create and customize the chart to your preferences, then access it any time from the Analytics page.',
+			dataNavigation: 'Data Navigation short description',
+			analysis: 'Create and customize the chart to your preferences, then access it any time from the Analytics page.',
 			alarms: 'View all events that have exceeded alarm thresholds.',
-			tools: 'Structural analysis tools with data processing algorithms from sensor groups, optimized for any type of infrastructure.',
-			devices: 'Get information and insights about all the devices installed.',
-			repositories: 'Explore and manage all files uploaded to the Repository.',
-			settings: 'These settings will apply to the entire monitoring project.',
-			reports: 'Easily create, customize and export Reports in PDF with data that matter most to you.',
-			map: '',
+			reports: 'Easily create, customize and export Reports in PDF with data that matter most to you.'
 		},
 	},
 	projects:{

@@ -1,34 +1,57 @@
-export interface ILanguage {
-    code: string,
-    label: string,
-    locale: string,
+export interface IProject {
+  _id: string;
+  name: string;
+  address?: string;
+  userId?: number;
+  description?: string;
+  coordinates?: {
+    lat?: number;
+    lng?: number;
+  };
+  installDate?: string; // ISO date
+  images?: any[];        // Replace `any` if image structure is known
+  sensors?: any[];
+  parameters?: any[];
+  stats?: {
+    device?: {
+      online?: number;
+      offline?: number;
+    };
+    gateway?: {
+      online?: number;
+      offline?: number;
+    };
+    alert?: {
+      totalStats?: {
+        count?: number;
+      };
+      statsPerLevel?: {
+        level?: number;
+        count?: number;
+      }[];
+    };
+  };
+  dimensions?: {
+    temperature?: 'celsius' | 'fahrenheit';
+  };
+  sensorCount?: number;
+  projects?: IProject[]
 }
 
-export interface IToast {
-  severity?: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';
-  summary?: string;
-  detail?: string;
-  position?: string;
-  group?: string;
-  life?: number
+export interface IInstrument {
+  id: string;
+  type: string;             // e.g., "accelerometer", "geophone"
+  model: string;
+  serialNumber: string;
+  installedAt: string;      // ISO timestamp
+  lastCalibration?: string; // Optional ISO date
+  status: 'online' | 'offline' | 'maintenance';
 }
 
-type MenuMode = 'static' | 'overlay';
+export interface ILoadingProjectStatus { id: string; status: boolean };
 
-export interface ILayoutConfig {
-    preset: string;
-    primary: string;
-    surface: string | null;
-    darkTheme: boolean;
-    menuMode: MenuMode;
-}
-
-export interface ILayoutState {
-    staticMenuDesktopInactive: boolean;
-    overlayMenuActive: boolean;
-    profileSidebarVisible: boolean;
-    configSidebarVisible: boolean;
-    staticMenuMobileActive: boolean;
-    menuHoverActive: boolean;
-    activeMenuItem: any;
+export interface IProjectTreeNode {
+  key: string;
+  label: string;
+  children?: IProjectTreeNode[];
 }

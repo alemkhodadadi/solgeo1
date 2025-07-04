@@ -41,23 +41,23 @@ export const routes = [
         }
       },
       {
-        path: 'data-explorer',
-        name: 'Data Explorer',
+        path: 'data-navigation',
+        name: 'Data Navigation',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.titles.dataExplorer',
-          description: 'menu.descriptions.dataExplorer',
+          title: 'menu.titles.dataNavigation',
+          description: 'menu.descriptions.dataNavigation',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
       },
       {
-        path: 'analytics',
-        name: 'Analytics',
+        path: 'analysis',
+        name: 'Analysis',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: 'menu.titles.analytics',
-          description: 'menu.descriptions.analytics',
+          title: 'menu.titles.analysis',
+          description: 'menu.descriptions.analysis',
           requiresAuth: true,
           requiredRoles: ['admin']
         }
@@ -74,28 +74,6 @@ export const routes = [
         }
       },
       {
-        path: 'tools',
-        name: 'Tools',
-        component: () => import('@/views/Dashboard.vue'),
-        meta: {
-          title: 'menu.titles.tools',
-          description: 'menu.descriptions.tools',
-          requiresAuth: true,
-          requiredRoles: ['admin']
-        }
-      },
-      {
-        path: 'devices',
-        name: 'Devices',
-        component: () => import('@/views/Dashboard.vue'),
-        meta: {
-          title: 'menu.titles.devices',
-          description: 'menu.descriptions.devices',
-          requiresAuth: true,
-          requiredRoles: ['admin']
-        }
-      },
-      {
         path: 'reports',
         name: 'Reports',
         component: () => import('@/views/Dashboard.vue'),
@@ -105,42 +83,7 @@ export const routes = [
           requiresAuth: true,
           requiredRoles: ['admin']
         }
-      },
-      {
-        path: 'repositories',
-        name: 'Repositories',
-        component: () => import('@/views/Dashboard.vue'),
-        meta: {
-          title: 'menu.titles.repositories',
-          description: 'menu.descriptions.repositories',
-          requiresAuth: true,
-          requiredRoles: ['admin']
-        }
-      },
-      {
-        path: 'settings',
-        name: 'Settings',
-        component: () => import('@/views/Dashboard.vue'),
-        meta: {
-          title: 'menu.titles.settings',
-          description: 'menu.descriptions.settings',
-          requiresAuth: true,
-          requiredRoles: ['admin']
-        }
-      },
-      {
-        path: 'map',
-        name: 'Map',
-        component: () => import('@/views/MapView.vue'),
-        meta: {
-          title: 'menu.titles.map',
-          description: 'menu.descriptions.map',
-          requiresAuth: true,
-          requiredRoles: ['admin']
-        }
-      },
-      
-    
+      }
     ]
   },
   {

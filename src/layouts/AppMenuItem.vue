@@ -51,8 +51,6 @@ function itemClick(event, item) {
         return;
     }
 
-    console.log('item.to:', item.to, ' item.url: ', item.url, ' layoutState.staticMenuMobileActive: ', layoutState.staticMenuMobileActive, ' layoutState.overlayMenuActive: ', layoutState.overlayMenuActive)
-
     if ((item.to || item.url) && (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)) {
         toggleMenu();
     }

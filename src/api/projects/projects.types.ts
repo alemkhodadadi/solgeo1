@@ -32,6 +32,7 @@ export interface Project {
   parameters: Parameter[]
   stats: Stats
   dimensions: Record<string, string> // string:string key-value pairs
+  projects: Project[]
 }
 
 // models/Image.ts

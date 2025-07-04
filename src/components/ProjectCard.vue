@@ -1,11 +1,17 @@
 
 
 <script setup lang="ts">
-import type { IProject } from '@/interfaces/models';
+import { computed } from 'vue';
+import type { IProject } from '@/interfaces/app';
 import { useProjectStore } from '@/store/project';
+import type { LoadingProjectStatus } from '@/interfaces/project'
 
-const projectStore = useProjectStore()
-defineProps<{ project: IProject }>();
+
+const props = defineProps<{ 
+  project: IProject; 
+  loading: boolean
+}>();
+
 
 const emit = defineEmits<{
   (e: 'onOpenProject', id: string): void
@@ -26,7 +32,7 @@ const emit = defineEmits<{
         </template>
         <template #footer>
             <div class="flex gap-4 mt-1">
-                <Button :loading="projectStore.loadingProject" :label="$t('projects.open')" class="w-full" @click="emit('onOpenProject', project._id)"/>
+                <Button :loading :label="$t('projects.open')" class="w-full" @click="emit('onOpenProject', project._id)"/>
             </div>
         </template>
     </Card>

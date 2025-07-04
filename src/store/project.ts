@@ -3,6 +3,8 @@ import { ref, computed } from 'vue'
 import { login as loginApi } from '@/api/auth/auth.api'
 import type { Project } from '@/api/projects/projects.types'
 import { fetchProjects, fetchSingleProject } from '@/api/projects/projects.api'
+import { delay } from '@/utils/commonMethods'
+
 
 export const useProjectStore = defineStore('project', () => {
 
@@ -10,7 +12,7 @@ export const useProjectStore = defineStore('project', () => {
     const projects = ref(<Project[]>([]))
     const currentProject = ref<Project | null>(null)
     const loadingProjects = ref(false)
-    const loadingProject = ref(false)
+    const selectedProjectId = ref('')
     const error = ref<string | null>(null)
 
     // Actions
@@ -32,8 +34,9 @@ export const useProjectStore = defineStore('project', () => {
     }
 
     async function getCurrentProject(id: string){
-        loadingProject.value = true
+        selectedProjectId.value = id
         try {
+            await delay(2000)
             const response = await fetchSingleProject(id)
             currentProject.value = response.data
         } catch (err) {
@@ -44,8 +47,12 @@ export const useProjectStore = defineStore('project', () => {
             }
             throw err // re-throw if needed
         } finally {
-            loadingProject.value = false
+            selectedProjectId.value = ''
         }
+    }
+
+    function unsetCurrentProject(){
+        currentProject.value = null
     }
 
     return {
@@ -53,7 +60,10 @@ export const useProjectStore = defineStore('project', () => {
         currentProject,
         getProjects,
         getCurrentProject,
-        loadingProject, 
-        loadingProjects
+        selectedProjectId, 
+        loadingProjects,
+        unsetCurrentProject
     }
+}, {
+  persist: true 
 })
