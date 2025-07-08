@@ -1,5 +1,7 @@
 <script setup>
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
+import { useAppStore } from '@/store/app';
+const appStore = useAppStore()
 </script>
 
 <template>
@@ -25,7 +27,7 @@ import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
                     <span class="text-primary font-bold text-3xl">404</span>
                     <h1 class="text-surface-900 dark:text-surface-0 font-bold text-3xl lg:text-5xl mb-2">Not Found</h1>
                     <div class="text-surface-600 dark:text-surface-200 mb-8">Requested resource is not available.</div>
-                    <Button as="router-link" label="Go to Dashboard" to="/" />
+                    <Button as="router-link" :label="'Go to '+appStore.getCurrentMainRoute.name" :to="appStore.getCurrentMainRoute.route" />
                 </div>
             </div>
         </div>

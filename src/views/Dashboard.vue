@@ -6,6 +6,13 @@
 		</template>
 		<template #description/>
 	</PageHeader>
+
+	<PageContent>
+		<template #content>
+			<Linechart/>
+		</template>
+	</PageContent>
+	
 	
 
 	<!-- Main content below -->
@@ -15,10 +22,11 @@
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/views/components/PageHeader.vue'
+import {PageHeader, PageContent, Linechart} from '@/views/components'
 import { onMounted } from 'vue'
 import { useProjectStore } from '@/store/project';
 import { useRoute } from 'vue-router';
+
 
 const projectStore = useProjectStore();
 const route = useRoute();

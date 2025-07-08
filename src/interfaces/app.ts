@@ -55,3 +55,8 @@ export interface IProjectTreeNode {
   label: string;
   children?: IProjectTreeNode[];
 }
+
+export interface IMainRoute {
+		name: string,
+		route: string
+}

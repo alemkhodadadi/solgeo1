@@ -2,10 +2,16 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { ILanguage, IToast, ILayoutConfig, ILayoutState } from '@/interfaces/layout'
+import type { ILanguage, IToast, ILayoutConfig, ILayoutState, IMainRoute } from '@/interfaces'
+import { useAuthStore } from './auth'
+import { useProjectStore } from './project'
+
+
 
 export const useAppStore = defineStore('app', () => {
-
+	const authStore = useAuthStore()
+	const projectStore = useProjectStore()
+	
 	const appGeneralSettingDrawerVisible = ref(false)
 
 	const appLogoId = ref('')
@@ -132,6 +138,27 @@ export const useAppStore = defineStore('app', () => {
 
 	const getAppLogoId = computed(() => appLogoId.value)
 
+	const getCurrentMainRoute = computed<IMainRoute>(() => {
+		if (authStore.isAuthenticated && !projectStore.currentProject) {
+			return {
+			name: 'Projects',
+			route: '/projects',
+			}
+		} else if (authStore.isAuthenticated && projectStore.currentProject) {
+			return {
+			name: 'Dashboard',
+			route: `/projects/${projectStore.currentProject._id}/dashboard`,
+			}
+		}
+
+		return {
+			name: 'Login',
+			route: '/login',
+		}
+	})
+
+
+
 	return {
 		layoutConfig,
 		layoutState,
@@ -150,7 +177,8 @@ export const useAppStore = defineStore('app', () => {
 		setAppGeneralSettingDrawerVisible,
 		setSplashScreen,
 		getAppLogoId, 
-		setAppLogoId
+		setAppLogoId,
+		getCurrentMainRoute
 	}
 }, {
   persist: true 

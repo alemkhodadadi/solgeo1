@@ -30,6 +30,7 @@ watch(
 
 <template>
 	<Toaster/>
+  <ConfirmDialog></ConfirmDialog>
 	<SolgeoSplash v-if="appStore.splashScreenStatus"/>
   	<router-view v-else/>
 </template>

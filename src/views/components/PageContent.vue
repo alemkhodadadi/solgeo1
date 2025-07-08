@@ -1,7 +1,9 @@
 <template>
-  <div class="card flex justify-between items-center px-4 py-3 border-b border-gray-200">
-    
-  </div>
+    <div class="card flex justify-between items-center px-4 py-3 border-b border-gray-200">
+        <div v-if="slots.content" class="flex items-center space-x-2">
+          	<slot name="content" />
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">

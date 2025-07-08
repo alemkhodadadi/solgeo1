@@ -4,30 +4,27 @@
             <ProjectCard v-for="project in projects" :loading="projectStore.selectedProjectId == project._id" :project @onOpenProject="openProject"/>
         </div>
         <Drawer v-model:visible="appStore.appGeneralSettingDrawerVisible" header="Portal general settings" position="right" style="min-width: 30rem;">
-            
             <div class="card">
                 <div class="font-semibold text-xl mb-4">App Logo</div>
                 <Toast />
-                
                 <FileUpload
-                ref="uploadRef"
-                name="files[]"
-                customUpload
-                :multiple="false"
-                accept="image/*"
-                :maxFileSize="1000000"
-                @uploader="onUpload"
-                class="w-full"
+				ref="uploadRef"
+				name="files[]"
+				customUpload
+				:multiple="false"
+				accept="image/*"
+				:maxFileSize="1000000"
+				@uploader="onUpload"
+				class="w-full"
                 >
                 <template #empty>
-                    <p class="text-gray-500 m-5">Drag and drop files here or click to upload.</p>
+                  <p class="text-gray-500 m-5">Drag and drop files here or click to upload.</p>
                 </template>
                 </FileUpload>
             </div>
             <Divider/>
             <div class="card">
                 <div class="font-semibold text-xl mb-4">App title</div>
-                
             </div>
         </Drawer>
     </div>

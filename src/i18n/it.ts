@@ -1,7 +1,10 @@
 const it = {
+	emptyString: '',
 	welcome: 'Benvenuto',
 	form: {
 		submit: 'Invia',
+		continue: 'Avanti',
+		cancel: 'Annulla'
 	},
 	login: {
 		title: 'Accesso',
@@ -13,7 +16,10 @@ const it = {
 		changelang: 'Cambia lingua',
 		changetheme: 'Cambia tema',
 		changesite: 'Cambia impianto',
+		settings: "Impostazioni del sito",
 		logout: 'Esci',
+		logoutConfirmationSentence: "Sei sicuro di voler fare il logout??",
+		backToProjects: "Torna ai progetti"
 	},
 	menu: {
 		titles: {

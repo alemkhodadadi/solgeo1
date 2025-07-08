@@ -1,7 +1,10 @@
 const en = {
+	emptyString: '',
 	welcome: 'Welcome',
 	form: {
 		submit: 'Submit',
+		continue: 'Continue',
+		cancel: 'Cancel'
 	},
 	login: {
 		title: 'Login',
@@ -13,7 +16,11 @@ const en = {
 		changelang: 'Change language',
 		changetheme: 'Change theme',
 		changesite: 'Change site',
+		settings: "Website settings",
 		logout: 'Logout',
+		logoutConfirmationSentence: "Are you sure you want to logout?",
+		backToProjects: "Back to projects"
+		
 	},
 	menu: {
 		titles: {

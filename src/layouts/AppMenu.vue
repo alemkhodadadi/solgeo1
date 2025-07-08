@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AppMenuItem from './AppMenuItem.vue'
 import { useProjectStore } from '@/store/project'
 
 const projectStore = useProjectStore()
+
+const currentProjectId = computed(() => projectStore.currentProject?._id)
 
 // Define the type for each menu item
 interface MenuItem {
@@ -17,18 +19,19 @@ interface MenuItem {
   class?: string
 }
 
-const model = ref<MenuItem[]>([
+const model = computed<MenuItem[]>(() => [
   {
-    label: 'menu.titles.home',
+    label: 'emptyString',
     items: [
-      { label: 'menu.titles.dashboard', icon: 'pi pi-fw pi-home', to: `/projects/${projectStore.currentProject?._id}/dashboard` },
-      { label: 'menu.titles.dataNavigation', icon: 'pi pi-fw pi-chart-bar', to: `/projects/${projectStore.currentProject?._id}/data-navigation` },
-      { label: 'menu.titles.analysis', icon: 'pi pi-fw pi-chart-line', to: `/projects/${projectStore.currentProject?._id}/analysis` },
-      { label: 'menu.titles.alarms', icon: 'pi pi-fw pi-info-circle', to: `/projects/${projectStore.currentProject?._id}/alarms` },
-      { label: 'menu.titles.reports', icon: 'pi pi-fw pi-file-pdf', to: `/projects/${projectStore.currentProject?._id}/reports` }
+      { label: 'menu.titles.dashboard', icon: 'pi pi-fw pi-home', to: `/projects/${currentProjectId.value}/dashboard` },
+      { label: 'menu.titles.dataNavigation', icon: 'pi pi-fw pi-chart-bar', to: `/projects/${currentProjectId.value}/data-navigation` },
+      { label: 'menu.titles.analysis', icon: 'pi pi-fw pi-chart-line', to: `/projects/${currentProjectId.value}/analysis` },
+      { label: 'menu.titles.alarms', icon: 'pi pi-fw pi-info-circle', to: `/projects/${currentProjectId.value}/alarms` },
+      { label: 'menu.titles.reports', icon: 'pi pi-fw pi-file-pdf', to: `/projects/${currentProjectId.value}/reports` }
     ]
   }
 ])
+
 </script>
 
 

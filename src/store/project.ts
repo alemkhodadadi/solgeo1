@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { login as loginApi } from '@/api/auth/auth.api'
-import type { Project } from '@/api/projects/projects.types'
+import type { IProject } from '@/interfaces/app'
 import { fetchProjects, fetchSingleProject } from '@/api/projects/projects.api'
 import { delay } from '@/utils/commonMethods'
 
@@ -9,8 +9,8 @@ import { delay } from '@/utils/commonMethods'
 export const useProjectStore = defineStore('project', () => {
 
     // State
-    const projects = ref(<Project[]>([]))
-    const currentProject = ref<Project | null>(null)
+    const projects = ref(<IProject[]>([]))
+    const currentProject = ref<IProject | null>(null)
     const loadingProjects = ref(false)
     const selectedProjectId = ref('')
     const error = ref<string | null>(null)

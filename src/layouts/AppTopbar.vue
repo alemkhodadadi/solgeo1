@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, computed, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useLayout } from '@/layouts/layout';
 import { useAuthStore } from '@/store/auth';
 import { useProjectStore } from '@/store/project';
@@ -7,12 +7,15 @@ import { useRouter, useRoute } from 'vue-router';
 import AppLang from './AppLangButton.vue';
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/store/app';
+import { useConfirm } from "primevue/useconfirm";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 const router = useRouter();
 const projectStore = useProjectStore();
 const {hideNavbar} = defineProps<{ hideNavbar: boolean | undefined }>();
-
+const confirm = useConfirm()
 
 const { projects, currentProject } = storeToRefs(projectStore);
 
@@ -24,8 +27,28 @@ const appStore = useAppStore();
 const { toggleMenu, toggleDarkMode } = appStore;
 
 function logout() {
-    authStore.logout();
-    router.push({ name: 'Login' });
+    confirm.require({
+        message: t('topbar.logoutConfirmationSentence'),
+        header: 'Logout',
+        icon: 'pi pi-sign-out',
+        rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Logout'
+        },
+        accept: () => {
+            authStore.logout();
+            router.push({ name: 'Login' });
+        },
+        reject: () => {
+            null
+        }
+    });
+    
+    
 }
 
 function backToProjects(){
@@ -70,8 +93,8 @@ function backToProjects(){
             <div class="layout-config-menu">
                 <!-- <Select v-if="!hideNavbar" v-tooltip.bottom="{ value: $t('topbar.changesite')}" v-model="currentProject" :options="projects" optionLabel="name" placeholder="Select a project" class="" 
                 /> -->
-                <Button v-if="!hideNavbar" label="Back to projects"  severity="secondary" @click="backToProjects" outlined />
-                <button v-if="hideNavbar" type="button" class="layout-topbar-action" @click="toggleAppGeneralSettingDrawer">
+                <Button v-if="!hideNavbar" :label="$t('topbar.backToProjects')"  severity="secondary" @click="backToProjects" outlined />
+                <button v-if="hideNavbar" v-tooltip.bottom="{ value: $t('topbar.settings')}" type="button" class="layout-topbar-action" @click="toggleAppGeneralSettingDrawer">
                     <i class="pi pi-cog"></i>
                 </button>
                 <button v-tooltip.bottom="{ value: $t('topbar.changetheme')}" type="button" class="layout-topbar-action" @click="toggleDarkMode">

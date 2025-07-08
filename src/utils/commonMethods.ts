@@ -5,8 +5,6 @@ export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
-
 function mapProjectToTreeNode(project: IProject): IProjectTreeNode {
   return {
     key: project._id,
@@ -20,3 +18,4 @@ function mapProjectToTreeNode(project: IProject): IProjectTreeNode {
 function mapProjectsToTree(projects: IProject[]): IProjectTreeNode[] {
   return projects.map(mapProjectToTreeNode);
 }
+
