@@ -12,23 +12,16 @@
     // Register components
     ChartJS.register(Title, Tooltip, Legend, PointElement, LineElement, LinearScale, TimeScale, CategoryScale, LineController, zoomPlugin);
 
-    function toLocalDateString(unix: number): string {
-        const d = new Date(unix);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
     // Chart references to sync zoom
     const blUChartRef = ref<any>(null);
     const blEChartRef = ref<any>(null);
     const blNChartRef = ref<any>(null);
-    const parsedXRef = ref(null);
-    const hoveredIndex = ref(null);
+    const hoverPosition = ref<{ x: number } | null>(null);
+    const hoveredIndex = ref<any>(null);
+    const hoveredX = ref<string | null>(null);
 
     watch(
-        parsedXRef,
+        hoverPosition,
         () => {
             [blUChartRef.value, blEChartRef.value, blNChartRef.value].forEach((c) => {
                 if (c?.chart) {
@@ -41,56 +34,61 @@
     // Crosshair plugin
     const crosshairPlugin = {
         id: 'hoverCrosshair',
-        afterDraw(chart: any) {
-            const active = chart.tooltip.getActiveElements();
-            if (!active.length) return;
-
-            const { x: parsedX, y: parsedY } = active[0].element.$context.parsed;
-            if (parsedX !== parsedXRef) {
-                parsedXRef.value = parsedX;
-
-                [blUChartRef.value, blEChartRef.value, blNChartRef.value].forEach((c) => {
-                    const loopchart = c.chart;
-
-                    const pixelX = loopchart.scales.x.getPixelForValue(parsedX);
-                    const dataset = loopchart.data.datasets[0];
-                    const index = dataset.data.findIndex((d) => d.x === toLocalDateString(parsedX));
-
-                    const dataAtX = dataset.data[index];
-                    console.log('index is:', index);
-                    if (!dataAtX) return; //
-
-                    const y = dataAtX.y;
-
-                    const pixelY = loopchart.scales.y.getPixelForValue(y);
-
-                    if (index !== -1 && index !== hoveredIndex.value) {
-                        console.log('hi');
-                        hoveredIndex.value = index;
-                        loopchart.tooltip.setActiveElements([{ datasetIndex: 0, index }], { x: pixelX, y: pixelY });
-                    }
-                    const ctx = loopchart.ctx;
-                    const area = loopchart.chartArea;
-                    ctx.save();
-                    ctx.setLineDash([5, 5]);
-                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-                    ctx.lineWidth = 1;
-
-                    // Vertical line
-                    ctx.beginPath();
-                    ctx.moveTo(pixelX, area.top);
-                    ctx.lineTo(pixelX, area.bottom);
-                    ctx.stroke();
-
-                    // Horizontal line
-                    ctx.beginPath();
-                    ctx.moveTo(area.left, pixelY);
-                    ctx.lineTo(area.right, pixelY);
-                    ctx.stroke();
-
-                    ctx.restore();
-                });
+        afterEvent(chart, args) {
+            const evt = args.event;
+            const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, false);
+            if (!points.length) {
+                if (hoverPosition.value !== null) hoverPosition.value = null;
+                return;
             }
+
+            const point = points[0];
+            console.log('point is:', point);
+            hoveredIndex.value = point.index;
+            const parsed = point.element.$context.parsed;
+
+            if (hoveredIndex.value === point.index && hoverPosition.value?.x === parsed.x) {
+                return; // prevent unnecessary update
+            }
+
+            hoveredIndex.value = point.index;
+            hoverPosition.value = { x: parsed.x }; // only x is needed globally
+        },
+        afterDraw(chart) {
+            if (!hoverPosition.value) return;
+
+            const { x } = hoverPosition.value;
+            const pixelX = chart.scales.x.getPixelForValue(x);
+            const dataset = chart.data.datasets[0];
+            // const index = dataset.data.findIndex((d) => d.x === new Date(x).toISOString().slice(0, 10));
+
+            const dataAtX = dataset.data.find((d) => d.x === new Date(x).toISOString().slice(0, 10));
+
+            if (!dataAtX) return; // ❌ No valid point to draw for this chart
+
+            const y = dataAtX.y;
+            const pixelY = chart.scales.y.getPixelForValue(y);
+            const ctx = chart.ctx;
+            const area = chart.chartArea;
+
+            ctx.save();
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.lineWidth = 1;
+
+            // Vertical line
+            ctx.beginPath();
+            ctx.moveTo(pixelX, area.top);
+            ctx.lineTo(pixelX, area.bottom);
+            ctx.stroke();
+
+            // Horizontal line
+            ctx.beginPath();
+            ctx.moveTo(area.left, pixelY);
+            ctx.lineTo(area.right, pixelY);
+            ctx.stroke();
+
+            ctx.restore();
         },
     };
 
