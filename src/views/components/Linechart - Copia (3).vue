@@ -1,0 +1,318 @@
+<script setup lang="ts">
+    import { ref, onMounted, watch } from 'vue';
+    import axios from 'axios';
+    import 'chartjs-adapter-luxon';
+    import { DateTime } from 'luxon';
+    import zoomPlugin from 'chartjs-plugin-zoom';
+
+    // Chart.js core
+    import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, LinearScale, TimeScale, CategoryScale, LineController } from 'chart.js';
+    import { Line } from 'vue-chartjs';
+
+    // Register components
+    ChartJS.register(Title, Tooltip, Legend, PointElement, LineElement, LinearScale, TimeScale, CategoryScale, LineController, zoomPlugin);
+
+    function toLocalDateString(unix: number): string {
+        const d = new Date(unix);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Chart references to sync zoom
+    const blUChartRef = ref<any>(null);
+    const blEChartRef = ref<any>(null);
+    const blNChartRef = ref<any>(null);
+    const parsedXRef = ref(null);
+    const hoveredIndex = ref(null);
+
+    watch(
+        parsedXRef,
+        () => {
+            requestAnimationFrame(() => {
+                [blUChartRef.value, blEChartRef.value, blNChartRef.value].forEach((c) => {
+                    if (c?.chart) {
+                        c.chart.update('none');
+                    }
+                });
+            });
+        },
+        { flush: 'post' }
+    );
+    // Crosshair plugin
+    const crosshairPlugin = {
+        id: 'hoverCrosshair',
+        afterDraw(chart: any) {
+            const active = chart.tooltip.getActiveElements();
+            if (!active.length) return;
+
+            const { x: parsedX, y: parsedY } = active[0].element.$context.parsed;
+
+            if (parsedX !== parsedXRef.value) {
+                parsedXRef.value = parsedX;
+
+                [blUChartRef.value, blEChartRef.value, blNChartRef.value].forEach((c) => {
+                    const loopchart = c.chart;
+                    const pixelX = loopchart.scales.x.getPixelForValue(parsedX);
+                    const dataset = loopchart.data.datasets[0];
+                    const index = dataset.data.findIndex((d) => d.x === toLocalDateString(parsedX));
+                    const dataAtX = dataset.data[index];
+                    if (!dataAtX) return;
+
+                    const y = dataAtX.y;
+                    const pixelY = loopchart.scales.y.getPixelForValue(y);
+
+                    loopchart.tooltip.setActiveElements([{ datasetIndex: 0, index }], { x: pixelX, y: pixelY });
+
+                    const ctx = loopchart.ctx;
+                    const area = loopchart.chartArea;
+                    ctx.save();
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                    ctx.lineWidth = 1;
+
+                    // Vertical
+                    ctx.beginPath();
+                    ctx.moveTo(pixelX, area.top);
+                    ctx.lineTo(pixelX, area.bottom);
+                    ctx.stroke();
+
+                    // Horizontal
+                    ctx.beginPath();
+                    ctx.moveTo(area.left, pixelY);
+                    ctx.lineTo(area.right, pixelY);
+                    ctx.stroke();
+
+                    ctx.restore();
+                });
+            }
+        },
+    };
+
+    ChartJS.register(crosshairPlugin);
+
+    // Common chart options
+    const chartOptions = {
+        responsive: true,
+        interaction: {
+            mode: 'nearest',
+            intersect: false,
+            axis: 'xy',
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                enabled: true,
+                mode: 'nearest',
+                intersect: false,
+                callbacks: {
+                    title(tooltipItems) {
+                        return tooltipItems[0].label;
+                    },
+                    label(tooltipItem) {
+                        const val = tooltipItem.raw.y ?? tooltipItem.raw;
+                        return `${val.toFixed(3)} m`;
+                    },
+                },
+            },
+            zoom: {
+                zoom: {
+                    wheel: { enabled: true, speed: 0.1 },
+                    pinch: { enabled: true },
+                    mode: 'x',
+                    onZoomComplete({ chart }) {
+                        const xScale = chart.scales.x;
+                        const newMin = xScale.min;
+                        const newMax = xScale.max;
+
+                        const charts = [blUChartRef.value, blEChartRef.value, blNChartRef.value];
+
+                        for (const c of charts) {
+                            if (!c || c.chart === chart) continue;
+
+                            const targetChart = c.chart;
+
+                            // 👇 Do zoom without touching min/max manually (preserves zooming)
+                            targetChart.zoomScale('x', {
+                                min: newMin,
+                                max: newMax,
+                            });
+
+                            // 👇 Animate the transition AFTER zoom
+                            targetChart.options.animation = {
+                                duration: 300,
+                                easing: 'easeOutCubic',
+                            };
+
+                            // 👇 Trigger redraw
+                            targetChart.update();
+                        }
+                    },
+                },
+                pan: {
+                    enabled: true,
+                    mode: 'x',
+                },
+                limits: {
+                    x: {
+                        min: 'original',
+                        max: 'original',
+                        minRange: 1,
+                    },
+                },
+            },
+        },
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    tooltipFormat: 'yyyy-MM-dd',
+                    displayFormats: {
+                        day: 'dd',
+                        month: 'MMM',
+                        year: 'yyyy',
+                    },
+                },
+                ticks: {
+                    callback(this: any, val: number) {
+                        const raw = this.getLabelForValue(val);
+                        const dt = DateTime.fromISO(raw);
+                        const rangeDays = (this.max - this.min) / (1000 * 60 * 60 * 24);
+
+                        if (rangeDays > 60) return dt.toFormat('MMM');
+                        else if (rangeDays > 10) return dt.toFormat('dd MMM');
+                        return dt.toFormat('dd');
+                    },
+                    maxTicksLimit: 10,
+                },
+                title: { display: true, text: 'Date' },
+            },
+            y: {
+                title: { display: true, text: 'ΔHEIGHT [m]' },
+            },
+        },
+    };
+
+    // Types
+    type GnssPoint = {
+        refDateTime: number;
+        blU: number;
+        blE: number;
+        blN: number;
+    };
+
+    type LineChartData = {
+        x: string;
+        y: number;
+    }[];
+
+    const blUChartData = ref();
+    const blEChartData = ref();
+    const blNChartData = ref();
+
+    function mapGnssDisplacement(raw: GnssPoint[]): {
+        blU: LineChartData;
+        blE: LineChartData;
+        blN: LineChartData;
+    } {
+        if (!raw.length) return { blU: [], blE: [], blN: [] };
+
+        const baseline = raw[0];
+
+        return raw
+            .map((point) => {
+                const x = new Date(point.refDateTime * 1000).toISOString().split('T')[0];
+                return {
+                    blU: { x, y: point.blU - baseline.blU },
+                    blE: { x, y: point.blE - baseline.blE },
+                    blN: { x, y: point.blN - baseline.blN },
+                };
+            })
+            .reduce(
+                (acc, cur) => {
+                    acc.blU.push(cur.blU);
+                    acc.blE.push(cur.blE);
+                    acc.blN.push(cur.blN);
+                    return acc;
+                },
+                { blU: [], blE: [], blN: [] } as { blU: LineChartData; blE: LineChartData; blN: LineChartData }
+            );
+    }
+
+    async function fetchGnssDisplacement() {
+        const url = '/api/api/GnssDisplacement/';
+        const params = {
+            netname: 'BASILICA',
+            blname: 'INGR00ITA.GN0100ITA',
+            sesslen: 1440,
+            stdate: '2025-02-28T00:00:00',
+            enddate: '2025-06-28T00:00:00',
+        };
+        const auth = {
+            username: 'solgeo',
+            password: 'solgeoBasilica25%',
+        };
+        const headers = {
+            displayceKey: 'RELEASE100_MAG2017_DISPLAYCE_REST_API',
+        };
+
+        try {
+            const response = await axios.get(url, { params, auth, headers });
+            const data = mapGnssDisplacement(response.data);
+
+            blUChartData.value = {
+                datasets: [
+                    {
+                        label: 'Δ blU',
+                        data: data.blU,
+                        borderColor: 'red',
+                        backgroundColor: 'red',
+                        showLine: false,
+                        fill: false,
+                    },
+                ],
+            };
+
+            blEChartData.value = {
+                datasets: [
+                    {
+                        label: 'Δ blE',
+                        data: data.blE,
+                        borderColor: 'green',
+                        backgroundColor: 'green',
+                        showLine: false,
+                        fill: false,
+                    },
+                ],
+            };
+
+            blNChartData.value = {
+                datasets: [
+                    {
+                        label: 'Δ blN',
+                        data: data.blN,
+                        borderColor: 'blue',
+                        backgroundColor: 'blue',
+                        showLine: false,
+                        fill: false,
+                    },
+                ],
+            };
+        } catch (err) {
+            console.error('API error:', err);
+        }
+    }
+
+    onMounted(() => {
+        fetchGnssDisplacement();
+    });
+</script>
+
+<template>
+    <div class="flex flex-col gap-6">
+        <Line ref="blUChartRef" v-if="blUChartData" :data="blUChartData" :options="chartOptions" />
+        <Line ref="blEChartRef" v-if="blEChartData" :data="blEChartData" :options="chartOptions" />
+        <Line ref="blNChartRef" v-if="blNChartData" :data="blNChartData" :options="chartOptions" />
+    </div>
+</template>

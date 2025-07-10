@@ -24,6 +24,10 @@
         primaryColor: style.getPropertyValue('--primary-color').trim(),
         hoverBg: style.getPropertyValue('--surface-hover').trim(),
     });
+    console.log('colors:', {
+        textColor: chartTheme.value.textColor,
+        tooltipBg: chartTheme.value.tooltipBg,
+    });
 
     // Register components
     ChartJS.register(Title, Tooltip, Legend, PointElement, LineElement, LinearScale, TimeScale, CategoryScale, LineController, zoomPlugin);
@@ -66,6 +70,8 @@
     watch(
         () => layoutConfig.value.darkTheme,
         (newVal, oldVal) => {
+            console.log(oldVal, '->', newVal);
+            console.log('Theme mode changed:', layoutConfig.value);
             const primaryColor = getThemeColor('--primary-color');
             const surfaceColor = getThemeColor('--surface-overlay');
 
@@ -80,6 +86,8 @@
                 primaryColor: style.getPropertyValue('--primary-color').trim(),
                 hoverBg: style.getPropertyValue('--surface-hover').trim(),
             };
+            console.log('bakcgroundcolor changed:', style.getPropertyValue('--surface-card').trim());
+            console.log('tooltipBg changed:', style.getPropertyValue('--surface-overlay').trim());
         }
     );
 
@@ -109,9 +117,7 @@
 
             const pixelX = chart.scales.x.getPixelForValue(x);
             const dataset = chart.data.datasets[0];
-            console.log('d.x is:', dataset.data[0].x, ' x is:', new Date(x));
-            const index = dataset.data.findIndex((d) => d.x.toISOString() == new Date(x).toISOString());
-            console.log('index is:', index);
+            const index = dataset.data.findIndex((d) => d.x === toLocalDateString(x));
             const dataAtX = dataset.data[index];
             if (!dataAtX) return;
 
@@ -174,30 +180,15 @@
                 displayColors: true, // set to false to remove dots
                 callbacks: {
                     title(tooltipItems) {
-                        console.log('tooltipItems is:', tooltipItems);
                         const raw = tooltipItems[0].raw;
-
-                        if (raw?.x instanceof Date) {
-                            const d = raw.x;
-                            const dateStr = d.toLocaleDateString(undefined, {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                            });
-                            const timeStr = d.toLocaleTimeString(undefined, {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                            });
-
-                            return `Date: ${dateStr}, ${timeStr}`;
-                        }
-
-                        return 'Date: Invalid';
+                        const dt = DateTime.fromISO(raw.x);
+                        return `Date: ${dt.toFormat('dd/LL/yyyy, HH:mm:ss')}`;
                     },
                     label(tooltipItem) {
+                        console.log(tooltipItem);
                         const raw = tooltipItem.raw;
                         const y = typeof raw === 'object' && raw !== null && 'y' in raw ? raw.y : null;
+                        console.log('y:', y);
                         if (typeof y === 'number') {
                             return `ΔHEIGHT: ${y.toFixed(4)} m`;
                         }
@@ -302,6 +293,7 @@
                         const raw = this.getLabelForValue(val);
                         const dt = DateTime.fromISO(raw);
                         const rangeDays = (this.max - this.min) / (1000 * 60 * 60 * 24);
+                        console.log('rangedays is:', rangeDays);
                         return dt.toFormat('dd MMM');
                     },
                     maxTicksLimit: 10,
@@ -372,7 +364,7 @@
 
         return raw
             .map((point) => {
-                const x = new Date(point.refDateTime * 1000); // local ISO string
+                const x = DateTime.fromSeconds(point.refDateTime).toISO(); // local ISO string
                 return {
                     blU: { x, y: point.blU - baseline.blU },
                     blE: { x, y: point.blE - baseline.blE },
@@ -413,7 +405,9 @@
 
         try {
             const response = await axios.get(url, { params, auth, headers });
+            console.log(response.data);
             const data = mapGnssDisplacement(response.data);
+            console.log('data after function:', data);
             blUChartData.value = {
                 datasets: [
                     {

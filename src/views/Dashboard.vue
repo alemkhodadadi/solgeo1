@@ -11,16 +11,21 @@
         <template #content>
             <Tabs value="0">
                 <TabList>
-                    <Tab value="0">Details</Tab>
-                    <Tab value="1">Displacements</Tab>
+                    <Tab value="1">Details</Tab>
+                    <Tab value="0">Displacements</Tab>
                     <Tab value="2">Telemetry</Tab>
                     <Tab value="3">Quality</Tab>
                     <Tab value="4">Alerts</Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel value="0">Details </TabPanel>
-                    <TabPanel value="1">
-                        <Linechart />
+                    <TabPanel value="1">Details </TabPanel>
+                    <TabPanel value="0">
+                        <div class="grid grid-cols-12 gap-8">
+                            <div class="col-span-12">
+                                <Linechart />
+                            </div>
+                            <div class="col-span-12"></div>
+                        </div>
                     </TabPanel>
                     <TabPanel value="2">Telemetry </TabPanel>
                     <TabPanel value="3">Quality </TabPanel>
