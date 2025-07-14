@@ -28,21 +28,12 @@
     // Register components
     ChartJS.register(Title, Tooltip, Legend, PointElement, LineElement, LinearScale, TimeScale, CategoryScale, LineController, zoomPlugin);
 
-    function toLocalDateString(unix: number): string {
-        const d = new Date(unix);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
     // Chart references to sync zoom
     const blUChartRef = ref<any>(null);
     const blEChartRef = ref<any>(null);
     const blNChartRef = ref<any>(null);
 
     const hoverTarget = ref<{ x: number; y: number } | null>(null);
-    const parsedXRef = ref(null);
 
     // Trigger redraw when hoverTarget changes
     watch(
@@ -55,20 +46,12 @@
         { flush: 'post' }
     );
 
-    function getThemeColor(varName: string): string {
-        const computed = getComputedStyle(document.documentElement);
-        return computed.getPropertyValue(varName).trim();
-    }
-
     const appStore = useAppStore();
     const { layoutConfig } = storeToRefs(appStore);
 
     watch(
         () => layoutConfig.value.darkTheme,
         (newVal, oldVal) => {
-            const primaryColor = getThemeColor('--primary-color');
-            const surfaceColor = getThemeColor('--surface-overlay');
-
             chartTheme.value = {
                 fontFamily: 'Inter',
                 textColor: style.getPropertyValue('--text-color').trim(),
@@ -87,6 +70,7 @@
         id: 'hoverCrosshair',
 
         afterEvent(chart, args) {
+            if (!chart.canvas?.id?.startsWith('gnss')) return;
             const evt = args.event;
             const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, false);
             if (!points.length) {
@@ -103,15 +87,14 @@
         },
 
         afterDraw(chart) {
+            if (!chart.canvas?.id?.startsWith('gnss')) return;
             if (!hoverTarget.value) return;
 
             const { x } = hoverTarget.value;
 
             const pixelX = chart.scales.x.getPixelForValue(x);
             const dataset = chart.data.datasets[0];
-            console.log('d.x is:', dataset.data[0].x, ' x is:', new Date(x));
             const index = dataset.data.findIndex((d) => d.x.toISOString() == new Date(x).toISOString());
-            console.log('index is:', index);
             const dataAtX = dataset.data[index];
             if (!dataAtX) return;
 
@@ -131,7 +114,7 @@
             ctx.save();
             ctx.setLineDash([5, 5]);
             ctx.strokeStyle = chartTheme.value.axisColor;
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 0.5;
 
             // Draw vertical line
             ctx.beginPath();
@@ -165,7 +148,7 @@
             tooltip: {
                 titleFont: { family: chartTheme.value.fontFamily, weight: 'bold' },
                 bodyFont: { family: chartTheme.value.fontFamily },
-
+                caretPadding: 20,
                 borderColor: chartTheme.value.axisColor,
                 borderWidth: 1,
                 enabled: true,
@@ -174,7 +157,6 @@
                 displayColors: true, // set to false to remove dots
                 callbacks: {
                     title(tooltipItems) {
-                        console.log('tooltipItems is:', tooltipItems);
                         const raw = tooltipItems[0].raw;
 
                         if (raw?.x instanceof Date) {
@@ -197,9 +179,15 @@
                     },
                     label(tooltipItem) {
                         const raw = tooltipItem.raw;
+                        const parameter: string = tooltipItem.dataset.label;
+                        const correctedLabels: Record<string, string> = {
+                            'Δ blU': 'Δ Height',
+                            'Δ blN': 'Δ North',
+                            'Δ blE': 'Δ East',
+                        };
                         const y = typeof raw === 'object' && raw !== null && 'y' in raw ? raw.y : null;
                         if (typeof y === 'number') {
-                            return `ΔHEIGHT: ${y.toFixed(4)} m`;
+                            return `${correctedLabels[parameter]}: ${y.toFixed(4)} m`;
                         }
 
                         return 'ΔHEIGHT: N/A';
@@ -316,7 +304,7 @@
                 },
                 grid: {
                     color: chartTheme.value.borderColor,
-                    lineWidth: 0.5,
+                    lineWidth: 0.3,
                 },
             },
             y: {
@@ -329,6 +317,7 @@
                     },
                 },
                 title: {
+                    display: true,
                     color: chartTheme.value.textColor,
                     font: {
                         family: chartTheme.value.fontFamily,
@@ -338,7 +327,7 @@
                 },
                 grid: {
                     color: chartTheme.value.borderColor,
-                    lineWidth: 0.5,
+                    lineWidth: ({ tick }) => (tick.value == 0 ? 0.8 : 0.3),
                 },
             },
         },
@@ -420,11 +409,12 @@
                         label: 'Δ blU',
                         data: data.blU,
                         borderColor: 'green',
+                        borderWidth: 0.3,
                         backgroundColor: 'green',
-                        showLine: false,
+                        showLine: true,
                         fill: false,
-                        pointRadius: 2,
-                        pointHoverRadius: 4,
+                        pointRadius: 1.5,
+                        pointHoverRadius: 3,
                     },
                 ],
             };
@@ -435,11 +425,12 @@
                         label: 'Δ blE',
                         data: data.blE,
                         borderColor: 'orange',
+                        borderWidth: 0.3,
                         backgroundColor: 'orange',
-                        showLine: false,
+                        showLine: true,
                         fill: false,
-                        pointRadius: 2,
-                        pointHoverRadius: 4,
+                        pointRadius: 1.5,
+                        pointHoverRadius: 3,
                     },
                 ],
             };
@@ -450,11 +441,12 @@
                         label: 'Δ blN',
                         data: data.blN,
                         borderColor: '#0051ffd4',
+                        borderWidth: 0.3,
                         backgroundColor: '#0051ffd4',
-                        showLine: false,
+                        showLine: true,
                         fill: false,
-                        pointRadius: 2,
-                        pointHoverRadius: 4,
+                        pointRadius: 1.5,
+                        pointHoverRadius: 3,
                     },
                 ],
             };
@@ -471,13 +463,13 @@
 <template>
     <div class="flex flex-col gap-6">
         <div class="h-[12rem] w-full relative">
-            <Line ref="blUChartRef" v-if="blUChartData" :data="blUChartData" :options="chartOptions" />
+            <Line id="gnss_chart_u" ref="blUChartRef" v-if="blUChartData" :data="blUChartData" :options="chartOptions" />
         </div>
         <div class="h-[12rem] w-full relative">
-            <Line ref="blEChartRef" v-if="blEChartData" :data="blEChartData" :options="chartOptions" />
+            <Line id="gnss_chart_e" ref="blEChartRef" v-if="blEChartData" :data="blEChartData" :options="chartOptions" />
         </div>
         <div class="h-[12rem] w-full relative">
-            <Line ref="blNChartRef" v-if="blNChartData" :data="blNChartData" :options="chartOptions" />
+            <Line id="gnss_chart_n" ref="blNChartRef" v-if="blNChartData" :data="blNChartData" :options="chartOptions" />
         </div>
     </div>
 </template>

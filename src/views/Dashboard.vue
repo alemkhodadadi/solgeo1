@@ -13,21 +13,26 @@
                 <TabList>
                     <Tab value="1">Details</Tab>
                     <Tab value="0">Displacements</Tab>
-                    <Tab value="2">Telemetry</Tab>
+                    <Tab value="2">Waveform chartjs </Tab>
                     <Tab value="3">Quality</Tab>
                     <Tab value="4">Alerts</Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel value="1">Details </TabPanel>
                     <TabPanel value="0">
+                        <!-- <PlotlyChart /> -->
+                        <WaveformChart />
+                    </TabPanel>
+                    <TabPanel value="1">
                         <div class="grid grid-cols-12 gap-8">
-                            <div class="col-span-12">
+                            <div class="col-span-6">
                                 <Linechart />
                             </div>
-                            <div class="col-span-12"></div>
+                            <div class="col-span-6"></div>
                         </div>
                     </TabPanel>
-                    <TabPanel value="2">Telemetry </TabPanel>
+                    <TabPanel value="2">
+                        <Waveform_amcharts />
+                    </TabPanel>
                     <TabPanel value="3">Quality </TabPanel>
                     <TabPanel value="4">Alerts </TabPanel>
                 </TabPanels>
@@ -42,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-    import { PageHeader, PageContent, Linechart } from '@/views/components';
+    import { PageHeader, PageContent, Linechart, PlotlyChart, WaveformChart, Waveform_amcharts } from '@/views/components';
     import { onMounted, ref } from 'vue';
     import { useProjectStore } from '@/store/project';
     import { useRoute } from 'vue-router';

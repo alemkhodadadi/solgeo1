@@ -1,4 +1,9 @@
-export { default as Linechart } from './Linechart.vue'
-export { default as PageContent } from './PageContent.vue'
-export { default as PageHeader } from './PageHeader.vue'
-export { default as SolgeoSplash } from './SolgeoSplash.vue'
+export { default as Linechart } from './Linechart.vue';
+export { default as PlotlyChart } from './Chart.vue';
+export { default as Waveformplot } from './Waveformplot.vue';
+export { default as WaveformUploader } from './WaveformUploader.vue';
+export { default as PageContent } from './PageContent.vue';
+export { default as PageHeader } from './PageHeader.vue';
+export { default as SolgeoSplash } from './SolgeoSplash.vue';
+export { default as WaveformChart } from './WaveformChart.vue';
+export { default as Waveform_amcharts } from './Waveform_amcharts.vue';
