@@ -48,14 +48,14 @@
             station: 'ANMO',
             channels: 'BH?', // Now it's a string: "BHZ,BHE,BHN"
             start: '2020-01-01T00:00:00',
-            end: '2020-01-01T00:01:00',
-            decimate: '100',
+            end: '2020-01-01T02:00:00',
+            decimate: '10',
+            frequency: '1',
         };
 
         try {
             const response = await axios.get('http://localhost:3001/api/waveform', { params });
             const data = response.data;
-            console.log('damn data is:', data);
             waveform.value = data;
         } catch (error) {
             console.error('Waveform fetch error:', error);

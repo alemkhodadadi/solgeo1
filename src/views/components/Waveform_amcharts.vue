@@ -31,8 +31,9 @@
             station: 'ANMO',
             channels: 'BH?',
             start: '2020-01-01T00:00:00',
-            end: '2020-01-01T00:01:00',
-            decimate: '100',
+            end: '2020-01-01T02:00:00',
+            decimate: '10',
+            frequency: '1',
         };
 
         try {
@@ -42,6 +43,13 @@
             console.error('Waveform fetch error:', error);
         }
     }
+
+    document.addEventListener('contextmenu', (e) => {
+        const chartDiv = document.getElementById('waveformchart-am');
+        if (chartDiv && chartDiv.contains(e.target as Node)) {
+            e.preventDefault();
+        }
+    });
 
     function setupChart(waveform: Trace[]) {
         root = am5.Root.new('waveformchart-am');
@@ -64,21 +72,53 @@
 
         chart = root.container.children.push(
             am5xy.XYChart.new(root, {
-                panX: true,
-                panY: true,
+                panX: false,
+                panY: false,
                 wheelX: 'panX',
                 wheelY: 'zoomX',
                 pinchZoomX: true,
             })
         );
 
+        let isRightMouseDown = false;
+        let lastX: number | null = null;
+
+        const plotContainer = chart.plotContainer;
+
+        plotContainer.events.on('pointerdown', (ev) => {
+            if (ev.originalEvent.button === 2) {
+                // Right-click
+                isRightMouseDown = true;
+                lastX = ev.point.x;
+                ev.originalEvent.preventDefault(); // prevent context menu
+            }
+        });
+
+        plotContainer.events.on('pointerup', () => {
+            isRightMouseDown = false;
+            lastX = null;
+        });
+
+        plotContainer.events.on('globalpointerup', () => {
+            isRightMouseDown = false;
+            lastX = null;
+        });
+
+        plotContainer.events.on('pointermove', (ev) => {
+            if (isRightMouseDown && lastX !== null) {
+                const deltaX = ev.point.x - lastX;
+                chart.panX(deltaX);
+                lastX = ev.point.x;
+            }
+        });
+
         xAxis = chart.xAxes.push(
             am5xy.DateAxis.new(root, {
                 baseInterval: { timeUnit: 'millisecond', count: 1 },
                 groupData: false,
-                maxDeviation: 0.1,
+                maxDeviation: 0,
                 renderer: am5xy.AxisRendererX.new(root, {
-                    minGridDistance: 70,
+                    minorGridEnabled: true,
                 }),
                 tooltip: am5.Tooltip.new(root, {}),
             })
